@@ -5,7 +5,6 @@ from random import shuffle
 
 class GameLoop:
     def __init__(self, num_players):
-        # cria lista de cores de war
         self.colors = ["Azul", "Amarelo", "Vermelho", "Preto", "Branco", "Verde"]
         self.players = []
         self.cards = []
