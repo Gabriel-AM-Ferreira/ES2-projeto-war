@@ -41,7 +41,6 @@ class GameLoop:
         self.objective_cards.append("Destruir totalmente OS exércitos amarelos.")
         self.objective_cards.append("Destruir totalmente OS exércitos vermelhos.")
         self.objective_cards.append("Destruir totalmente OS exércitos pretos.")
-        self.objective_cards.append("Destruir totalmente OS exércitos verdes.")
         self.objective_cards.append("Destruir totalmente OS exércitos brancos.")
         self.objective_cards.append("Destruir totalmente OS exércitos verdes.")
 
