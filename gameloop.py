@@ -165,6 +165,17 @@ class GameLoop:
                 self.turns_phases()
         # mostra o vencedor
         print("O jogador %s venceu!" % self.winner.name)      
+                
+    def turns_phases(self):
+        # fase de distribuicao de tropas
+        self.distribute_troops()
+        # fase de ataque
+        self.attack_phase()
+        # fase de movimentacao
+        self.move_troops_phase()
+        # recebe carta de territorio
+        self.receive_territory_card()
+
 
 
 
