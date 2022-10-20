@@ -1,13 +1,12 @@
 from continent import *
 from player import *
 from card import *
-from random import shuffle
 from territory import *
 from constants import *
+from dice import *
 class GameLoop:
     def __init__(self, num_players):
         self.colors = [VERMELHO, AZUL, VERDE, AMARELO, PRETO, BRANCO]
-
         self.players = []
         self.cards = []
         self.objective_cards = []
@@ -16,6 +15,7 @@ class GameLoop:
         self.num_players = num_players
         self.turn = 0
         self.current_player = 0
+        self.winner = None
 
         # adiciona jogadores a lista
         for i in range(num_players):
@@ -44,15 +44,16 @@ class GameLoop:
         self.objective_cards.append(OBJETIVO_12)
         self.objective_cards.append(OBJETIVO_13)
         self.objective_cards.append(OBJETIVO_14)
-
-        # embaralha as cartas de objetivo
-        shuffle(self.objective_cards)
         
-        # distribui as cartas de objetivo
+        # distribui as cartas de objetivo aos jogadores
         for player in self.players:
-            player.objective_card = self.objective_cards.pop()
+            territory_die = Dice(len(self.objective_cards))
+            player.objective = self.objective_cards[territory_die.roll() - 1]
+            self.objective_cards.remove(player.objective)
 
-        # adiciona territórios a lista
+
+
+        # cria grafo dos territórios
         self.territories.append(Territory(ALASCA, AMERICA_DO_NORTE, [MACKENZIE, VANCOUVER, VLADIVOSTOK], TROPAS_MINIMAS))
         self.territories.append(Territory(MACKENZIE, AMERICA_DO_NORTE, [ALASCA, VANCOUVER, GROELANDIA, OTTAWA], TROPAS_MINIMAS))
         self.territories.append(Territory(VANCOUVER, AMERICA_DO_NORTE, [ALASCA, MACKENZIE, OTTAWA, CALIFORNIA], TROPAS_MINIMAS))
@@ -97,15 +98,11 @@ class GameLoop:
         self.territories.append(Territory(NOVA_GUINE, OCEANIA, [AUSTRALIA, BORNEU], TROPAS_MINIMAS))
 
 
-        # embaralha os territórios
-        shuffle(self.territories)
-
-        # embaralha os jogadores
-        shuffle(self.players)
-
-        # distribui os territórios
+        # distribui os territorios aos jogadores
+        player_dice = Dice(len(self.players))
         for territory in self.territories:
-            territory.owner = self.players[self.territories.index(territory) % len(self.players)].name
+            territory.owner = self.players[player_dice.roll() - 1]
+
 
         # adiciona continentes a lista
         self.continents.append(Continent(AFRICA, BONUS_ASIA, self.territories))
@@ -160,5 +157,22 @@ class GameLoop:
         self.cards.append(Card(VLADIVOSTOK, CIRCULO))
         self.cards.append(Card(CORINGA, CORINGA))
 
-        # embaralha as cartas
-        shuffle(self.cards)
+
+    def start(self):
+        while self.winner is not None:
+            for player in self.players:
+                self.current_player = player
+                self.turns_phases()
+        # mostra o vencedor
+        print("O jogador %s venceu!" % self.winner.name)      
+
+
+
+
+
+
+
+
+
+
+
