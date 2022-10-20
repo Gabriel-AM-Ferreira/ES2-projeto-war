@@ -2,6 +2,7 @@ from continent import *
 from player import *
 from card import *
 from territory import *
+from objective import *
 from constants import *
 from dice import *
 class GameLoop:
@@ -30,20 +31,21 @@ class GameLoop:
             self.colors.remove(player.color)
         
         # adiciona cartas de objetivo a lista
-        self.objective_cards.append(OBJETIVO_1)
-        self.objective_cards.append(OBJETIVO_2)
-        self.objective_cards.append(OBJETIVO_3)
-        self.objective_cards.append(OBJETIVO_4)
-        self.objective_cards.append(OBJETIVO_5)
-        self.objective_cards.append(OBJETIVO_6)
-        self.objective_cards.append(OBJETIVO_7)
-        self.objective_cards.append(OBJETIVO_8)
-        self.objective_cards.append(OBJETIVO_9)
-        self.objective_cards.append(OBJETIVO_10)
-        self.objective_cards.append(OBJETIVO_11)
-        self.objective_cards.append(OBJETIVO_12)
-        self.objective_cards.append(OBJETIVO_13)
-        self.objective_cards.append(OBJETIVO_14)
+        self.objective_cards.append(Objective(OBJETIVO_1))
+        self.objective_cards.append(Objective(OBJETIVO_2))
+        self.objective_cards.append(Objective(OBJETIVO_3))
+        self.objective_cards.append(Objective(OBJETIVO_4))
+        self.objective_cards.append(Objective(OBJETIVO_5))
+        self.objective_cards.append(Objective(OBJETIVO_6))
+        self.objective_cards.append(Objective(OBJETIVO_7))
+        self.objective_cards.append(Objective(OBJETIVO_8))
+        self.objective_cards.append(Objective(OBJETIVO_9))
+        self.objective_cards.append(Objective(OBJETIVO_10))
+        self.objective_cards.append(Objective(OBJETIVO_11))
+        self.objective_cards.append(Objective(OBJETIVO_12))
+        self.objective_cards.append(Objective(OBJETIVO_13))
+        self.objective_cards.append(Objective(OBJETIVO_14))
+
         
         # distribui as cartas de objetivo aos jogadores
         for player in self.players:
@@ -163,8 +165,9 @@ class GameLoop:
             for player in self.players:
                 self.current_player = player
                 self.turns_phases()
+                self.is_winner(self.current_player)
         # mostra o vencedor
-        print("O jogador %s venceu!" % self.winner.name)      
+        print(f"O jogador {self.winner.name} venceu!")
                 
     def turns_phases(self):
         # fase de distribuicao de tropas
@@ -176,14 +179,6 @@ class GameLoop:
         # recebe carta de territorio
         self.receive_territory_card()
 
-
-
-
-
-
-
-
-
-
-
+    def is_winner(self, player):
+        pass
 
