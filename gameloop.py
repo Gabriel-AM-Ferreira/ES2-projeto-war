@@ -1,13 +1,13 @@
 from continent import *
 from player import *
 from card import *
-from random import shuffle
 from territory import *
+from objective import *
 from constants import *
+from dice import *
 class GameLoop:
     def __init__(self, num_players):
         self.colors = [VERMELHO, AZUL, VERDE, AMARELO, PRETO, BRANCO]
-
         self.players = []
         self.cards = []
         self.objective_cards = []
@@ -16,6 +16,7 @@ class GameLoop:
         self.num_players = num_players
         self.turn = 0
         self.current_player = 0
+        self.winner = None
 
         # adiciona jogadores a lista
         for i in range(num_players):
@@ -30,29 +31,31 @@ class GameLoop:
             self.colors.remove(player.color)
         
         # adiciona cartas de objetivo a lista
-        self.objective_cards.append(OBJETIVO_1)
-        self.objective_cards.append(OBJETIVO_2)
-        self.objective_cards.append(OBJETIVO_3)
-        self.objective_cards.append(OBJETIVO_4)
-        self.objective_cards.append(OBJETIVO_5)
-        self.objective_cards.append(OBJETIVO_6)
-        self.objective_cards.append(OBJETIVO_7)
-        self.objective_cards.append(OBJETIVO_8)
-        self.objective_cards.append(OBJETIVO_9)
-        self.objective_cards.append(OBJETIVO_10)
-        self.objective_cards.append(OBJETIVO_11)
-        self.objective_cards.append(OBJETIVO_12)
-        self.objective_cards.append(OBJETIVO_13)
-        self.objective_cards.append(OBJETIVO_14)
+        self.objective_cards.append(Objective(OBJETIVO_1))
+        self.objective_cards.append(Objective(OBJETIVO_2))
+        self.objective_cards.append(Objective(OBJETIVO_3))
+        self.objective_cards.append(Objective(OBJETIVO_4))
+        self.objective_cards.append(Objective(OBJETIVO_5))
+        self.objective_cards.append(Objective(OBJETIVO_6))
+        self.objective_cards.append(Objective(OBJETIVO_7))
+        self.objective_cards.append(Objective(OBJETIVO_8))
+        self.objective_cards.append(Objective(OBJETIVO_9))
+        self.objective_cards.append(Objective(OBJETIVO_10))
+        self.objective_cards.append(Objective(OBJETIVO_11))
+        self.objective_cards.append(Objective(OBJETIVO_12))
+        self.objective_cards.append(Objective(OBJETIVO_13))
+        self.objective_cards.append(Objective(OBJETIVO_14))
 
-        # embaralha as cartas de objetivo
-        shuffle(self.objective_cards)
         
-        # distribui as cartas de objetivo
+        # distribui as cartas de objetivo aos jogadores
         for player in self.players:
-            player.objective_card = self.objective_cards.pop()
+            territory_die = Dice(len(self.objective_cards))
+            player.objective = self.objective_cards[territory_die.roll() - 1]
+            self.objective_cards.remove(player.objective)
 
-        # adiciona territórios a lista
+
+
+        # cria grafo dos territórios
         self.territories.append(Territory(ALASCA, AMERICA_DO_NORTE, [MACKENZIE, VANCOUVER, VLADIVOSTOK], TROPAS_MINIMAS))
         self.territories.append(Territory(MACKENZIE, AMERICA_DO_NORTE, [ALASCA, VANCOUVER, GROELANDIA, OTTAWA], TROPAS_MINIMAS))
         self.territories.append(Territory(VANCOUVER, AMERICA_DO_NORTE, [ALASCA, MACKENZIE, OTTAWA, CALIFORNIA], TROPAS_MINIMAS))
@@ -97,15 +100,11 @@ class GameLoop:
         self.territories.append(Territory(NOVA_GUINE, OCEANIA, [AUSTRALIA, BORNEU], TROPAS_MINIMAS))
 
 
-        # embaralha os territórios
-        shuffle(self.territories)
-
-        # embaralha os jogadores
-        shuffle(self.players)
-
-        # distribui os territórios
+        # distribui os territorios aos jogadores
+        player_dice = Dice(len(self.players))
         for territory in self.territories:
-            territory.owner = self.players[self.territories.index(territory) % len(self.players)].name
+            territory.owner = self.players[player_dice.roll() - 1]
+
 
         # adiciona continentes a lista
         self.continents.append(Continent(AFRICA, BONUS_ASIA, self.territories))
@@ -160,5 +159,24 @@ class GameLoop:
         self.cards.append(Card(VLADIVOSTOK, CIRCULO))
         self.cards.append(Card(CORINGA, CORINGA))
 
-        # embaralha as cartas
-        shuffle(self.cards)
+
+    def start(self):
+        while self.winner is not None:
+            for player in self.players:
+                self.current_player = player
+                self.turns_phases()
+                self.is_winner(self.current_player)
+        # mostra o vencedor
+        print(f"O jogador {self.winner.name} venceu!")
+                
+    def turns_phases(self):
+        # fase de distribuicao de tropas
+        self.distribute_troops()
+        # fase de ataque
+        self.attack_phase()
+        # fase de movimentacao
+        self.move_troops_phase()
+        # recebe carta de territorio
+        self.give_territory_card()
+
+    
