@@ -179,4 +179,34 @@ class GameLoop:
         # recebe carta de territorio
         self.give_territory_card()
 
-    
+    def distribute_troops(self):
+        # pega o numero de territorios do jogador
+        number_of_territories = self.current_player.get_number_of_territories()
+        # calcula o numero de tropas a serem distribuidas
+        troops_to_distribute = number_of_territories // 3
+        # adiciona as tropas extras
+        troops_to_distribute += self.get_bonus_troops()
+        # adiciona as tropas distribuidas ao jogador
+        self.current_player.add_troops(troops_to_distribute)
+        print(f"Jogador {self.current_player.name} recebeu {troops_to_distribute} tropas.")
+
+    def get_bonus_troops(self):
+        bonus = 0
+        for continent in self.continents:
+            if continent.is_complete(self.current_player):
+                bonus += continent.bonus
+        return bonus
+        
+
+    def attack_phase(self):
+        pass
+
+    def move_troops_phase(self):
+        pass
+
+    def give_territory_card(self):
+        pass
+
+
+
+
