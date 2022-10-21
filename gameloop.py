@@ -177,8 +177,6 @@ class GameLoop:
         # fase de movimentacao
         self.move_troops_phase()
         # recebe carta de territorio
-        self.receive_territory_card()
+        self.give_territory_card()
 
-    def is_winner(self, player):
-        pass
-
+    

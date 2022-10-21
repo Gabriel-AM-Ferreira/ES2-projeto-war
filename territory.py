@@ -6,6 +6,6 @@ class Territory:
         self.continent = continent
         self.neighbors = neighbors_list
         self.troops = troops
-        self.owner = ""
+        self.owner = None
 
     

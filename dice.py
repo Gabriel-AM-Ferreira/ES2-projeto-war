@@ -12,4 +12,8 @@ class Dice:
         """Return a random value between 1 and number of sides."""
         return randint(1, self.num_sides)
 
+    def roll_many(self, num_rolls):
+        """Return a list of num_rolls random values between 1 and number of sides."""
+        return [self.roll() for _ in range(num_rolls)]
+
         

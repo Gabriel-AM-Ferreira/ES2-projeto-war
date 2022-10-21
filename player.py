@@ -1,4 +1,4 @@
-
+from dice import *
 class Player:
     def __init__(self, name):
         self.name = name
@@ -7,3 +7,6 @@ class Player:
         self.cards = []
         self.territories = []
         self.continents = []
+
+
+    
