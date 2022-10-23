@@ -212,8 +212,29 @@ class GameLoop:
         self.current_player.add_normal_troops(troops_to_distribute)
         # adiciona tropas extras dos continentes
         self.current_player.add_extra_troops()
+        # verifica se o jogador quer fazer trocas
+        self.cards_exchange()
                 
         print(f"O {self.current_player.name} recebeu {troops_to_distribute} tropas.")
+
+    def cards_exchange(self):
+        cards_quantity = len(self.current_player.cards)
+        if cards_quantity < 3:
+            return
+        if cards_quantity >= 5:
+            self.cards = self.current_player.exchange_cards(self.cards)
+            return
+        print(f"{self.current_player} deseja trocar cartas?")
+        print("1 - Sim")
+        print("2 - Nao")
+        while True:
+            option = input("Opcao: ")
+            if option == "1":
+                self.cards = self.current_player.exchange_cards(self.cards)
+                break
+            elif option == "2":
+                break
+            print("Opcao invalida!")
 
 
     def attack_phase(self):
