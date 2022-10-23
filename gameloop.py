@@ -5,6 +5,7 @@ from territory import *
 from objective import *
 from constants import *
 from dice import *
+from random import shuffle
 class GameLoop:
     def __init__(self, num_players):
         self.colors = [VERMELHO, AZUL, VERDE, AMARELO, PRETO, BRANCO]
@@ -14,13 +15,17 @@ class GameLoop:
         self.continents = []
         self.territories = []
         self.num_players = num_players
-        self.turn = 0
-        self.current_player = 0
+        self.turn = -1
+        self.current_player = None
         self.winner = None
 
         # adiciona jogadores a lista
         for i in range(num_players):
             self.players.append(Player("Jogador " + str(i + 1)))
+
+        for player in self.players:
+            print(f"Jogador {player.name} criado.")
+
         
         # escolha de cores dos jogadores
         for player in self.players:
@@ -29,6 +34,9 @@ class GameLoop:
                 print(color)
             player.color = input()
             self.colors.remove(player.color)
+        
+        for player in self.players:
+            print(player.name, "escolheu a cor", player.color)
         
         # adiciona cartas de objetivo a lista
         self.objective_cards.append(Objective(OBJETIVO_1))
@@ -53,8 +61,10 @@ class GameLoop:
             player.objective = self.objective_cards[territory_die.roll() - 1]
             self.objective_cards.remove(player.objective)
 
+        for player in self.players:
+            print(player.name, "recebeu a carta de objetivo", player.objective.description)
 
-
+        
         # cria grafo dos territórios
         self.territories.append(Territory(ALASCA, AMERICA_DO_NORTE, [MACKENZIE, VANCOUVER, VLADIVOSTOK], TROPAS_MINIMAS))
         self.territories.append(Territory(MACKENZIE, AMERICA_DO_NORTE, [ALASCA, VANCOUVER, GROELANDIA, OTTAWA], TROPAS_MINIMAS))
@@ -100,12 +110,18 @@ class GameLoop:
         self.territories.append(Territory(NOVA_GUINE, OCEANIA, [AUSTRALIA, BORNEU], TROPAS_MINIMAS))
 
 
-        # distribui os territorios aos jogadores
-        player_dice = Dice(len(self.players))
-        for territory in self.territories:
-            territory.owner = self.players[player_dice.roll() - 1]
+        # distribui os territorios aos jogadores aleatoriamente
+        shuffle(self.territories)
+        shuffle(self.players)
+        for i in range(len(self.territories)):
+            self.territories[i].owner = self.players[i % len(self.players)]
+            self.territories[i].owner.territories.append(self.territories[i])
 
+        for player in self.players:
+            print(f"Territorios do jogador {player.name}: {[territory.name for territory in player.territories]}")
+            print(len(player.territories))
 
+        
         # adiciona continentes a lista
         self.continents.append(Continent(AFRICA, BONUS_ASIA, self.territories))
         self.continents.append(Continent(AMERICA_DO_NORTE, BONUS_AMERICA_DO_NORTE, self.territories))
@@ -158,45 +174,47 @@ class GameLoop:
         self.cards.append(Card(VIETNA, TRIANGULO))
         self.cards.append(Card(VLADIVOSTOK, CIRCULO))
         self.cards.append(Card(CORINGA, CORINGA))
+        
 
 
     def start(self):
-        while self.winner is not None:
+        while self.winner is None:
+            self.turn += 1
+            print(f"Turno atual: {self.turn}")
             for player in self.players:
+                print(f"Jogador atual: {player.name}")
                 self.current_player = player
                 self.turns_phases()
                 self.is_winner(self.current_player)
+                if self.winner is not None:
+                    break
         # mostra o vencedor
         print(f"O jogador {self.winner.name} venceu!")
                 
     def turns_phases(self):
         # fase de distribuicao de tropas
         self.distribute_troops()
-        # fase de ataque
-        self.attack_phase()
-        # fase de movimentacao
-        self.move_troops_phase()
-        # recebe carta de territorio
-        self.give_territory_card()
+        if self.turn > 0:
+            # fase de ataque
+            self.attack_phase()
+            # fase de movimentacao
+            self.move_troops_phase()
+            # recebe carta de territorio
+            self.give_territory_card()
 
     def distribute_troops(self):
+        print(f"Distribuicao de tropas do {self.current_player.name}") 
         # pega o numero de territorios do jogador
-        number_of_territories = self.current_player.get_number_of_territories()
+        number_of_territories = len(self.current_player.territories)
         # calcula o numero de tropas a serem distribuidas
-        troops_to_distribute = number_of_territories // 3
-        # adiciona as tropas extras
-        troops_to_distribute += self.get_bonus_troops()
+        troops_to_distribute = max([3, number_of_territories // 2])
         # adiciona as tropas distribuidas ao jogador
-        self.current_player.add_troops(troops_to_distribute)
-        print(f"Jogador {self.current_player.name} recebeu {troops_to_distribute} tropas.")
+        self.current_player.add_normal_troops(troops_to_distribute)
+        # adiciona tropas extras dos continentes
+        self.current_player.add_extra_troops()
+                
+        print(f"O {self.current_player.name} recebeu {troops_to_distribute} tropas.")
 
-    def get_bonus_troops(self):
-        bonus = 0
-        for continent in self.continents:
-            if continent.is_complete(self.current_player):
-                bonus += continent.bonus
-        return bonus
-        
 
     def attack_phase(self):
         pass
@@ -207,6 +225,13 @@ class GameLoop:
     def give_territory_card(self):
         pass
 
+    def is_winner(self, player):
+        pass
 
+
+if __name__ == '__main__':
+    n = int(input("Digite o numero de jogadores: "))
+    game = GameLoop(n)
+    game.start()
 
 

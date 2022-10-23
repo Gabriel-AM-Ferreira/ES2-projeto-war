@@ -8,4 +8,11 @@ class Territory:
         self.troops = troops
         self.owner = None
 
+    def add_troops(self, number):
+        self.troops += number
+
+    def remove_troops(self, number):
+        self.troops -= number
+
+        
     
