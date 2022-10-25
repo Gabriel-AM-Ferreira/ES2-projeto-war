@@ -1,6 +1,8 @@
+from asyncio import constants
 from dice import *
 from territory import *
 from continent import *
+from constants import *
 class Player:
     def __init__(self, name):
         self.name = name
@@ -9,6 +11,7 @@ class Player:
         self.cards = []
         self.territories = []
         self.continents = []
+        self.conquered_territoty = False
 
 
     def add_normal_troops(self, troops_to_add):
@@ -44,7 +47,75 @@ class Player:
             if territory.name == territory_name:
                 return territory
         return None
-    
+
+    def exchange_cards(self, used_cards, exchange_number):
+        cards_to_exchange = []
+        while True:
+            for i in range(3):
+                while True:
+                    card_name = input(f"Qual carta deseja trocar?\n{[card.name for card in self.cards]}\n")
+                    card = self.get_card(card_name)
+                    if card is not None:
+                        break
+                    print("Carta invalida")
+                cards_to_exchange.append(card)
+                self.cards.remove(card)
+            if self.is_valid_exchange(cards_to_exchange):
+                break
+            print("Troca invalida")
+            for card in cards_to_exchange:
+                self.cards.append(card)
+            cards_to_exchange = []
+        # verficar se o jogador possui os territorios das cartas
+        self.cards_that_have_territories(cards_to_exchange)
+
+        self.add_troops(4+(exchange_number*2), self.territories)
+        for card in cards_to_exchange:
+            self.cards.remove(card)
+        return used_cards + cards_to_exchange
+
+    def is_valid_exchange(self, cards_to_exchange):
+        if len(cards_to_exchange) != 3:
+            return False
+        if self.same_symbol(cards_to_exchange):
+            return True
+        if self.diff_symbols(cards_to_exchange):
+            return True
+        return False
+
+    # retorna true se as cartas tem o mesmo simbolo (deve contar o coringa)
+    def same_symbol(self, cards_to_exchange):
+        symbols = []
+        for card in cards_to_exchange:
+            if card.symbol != "Coringa":
+                symbols.append(card.symbol)
+        if len(set(symbols)) == 1:
+            return True
+        return False
+
+    def diff_symbols(self, cards_to_exchange):
+        num_coringas = 0
+        symbols = []
+        for card in cards_to_exchange:
+            if card.symbol == "Coringa":
+                num_coringas += 1
+            else:
+                symbols.append(card.symbol)
+        if len(set(symbols)) + num_coringas == 3:
+            return True
+        return False
+
+    def get_card(self, card_name):
+        for card in self.cards:
+            if card.name == card_name:
+                return card
+        return None
+
+    def cards_that_have_territories(self, cards_to_exchange):
+        for card in cards_to_exchange:
+            for territory in self.territories:
+                if territory.name == card.name:
+                    territory.add_troops(2)
 
 
     
@@ -64,6 +135,51 @@ if __name__ == '__main__':
     continents.append(Continent("Asia", 7, [terr_5, terr_6]))
     continents.append(Continent("America do Norte", 5, [terr_7]))
     print(f"continents: {[c.name for c in continents]}")
+
+    card_list = []
+    card_list.append(Card(AFRICA_DO_SUL, TRIANGULO))
+    card_list.append(Card(ALEMANHA, CIRCULO))
+    card_list.append(Card(ALASCA, TRIANGULO))
+    card_list.append(Card(ARAL, TRIANGULO))
+    card_list.append(Card(ARGELIA, CIRCULO))
+    card_list.append(Card(ARGENTINA, QUADRADO))
+    card_list.append(Card(AUSTRALIA, TRIANGULO))
+    card_list.append(Card(BORNEU, QUADRADO))
+    card_list.append(Card(BRASIL, CIRCULO))
+    card_list.append(Card(CALIFORNIA, QUADRADO))
+    card_list.append(Card(CHINA, CIRCULO))
+    card_list.append(Card(CONGO, QUADRADO))
+    card_list.append(Card(DUDINKA, CIRCULO))
+    card_list.append(Card(EGITO, TRIANGULO))
+    card_list.append(Card(FRANCA, QUADRADO))
+    card_list.append(Card(GROELANDIA, CIRCULO))
+    card_list.append(Card(INDIA, QUADRADO))
+    card_list.append(Card(INGLATERRA, CIRCULO))
+    card_list.append(Card(ISLANDIA, TRIANGULO))
+    card_list.append(Card(JAPAO, QUADRADO))
+    card_list.append(Card(LABRADOR, QUADRADO))
+    card_list.append(Card(MACKENZIE, CIRCULO))
+    card_list.append(Card(MADAGASCAR, CIRCULO))
+    card_list.append(Card(MEXICO, QUADRADO))
+    card_list.append(Card(MONGOLIA, CIRCULO))
+    card_list.append(Card(MOSCOU, TRIANGULO))
+    card_list.append(Card(NOVA_GUINE, CIRCULO))
+    card_list.append(Card(NOVA_YORQUE, TRIANGULO))
+    card_list.append(Card(OMSK, QUADRADO))
+    card_list.append(Card(ORIENTE_MEDIO, QUADRADO))
+    card_list.append(Card(OTTAWA, CIRCULO))
+    card_list.append(Card(PERU, QUADRADO))
+    card_list.append(Card(POLONIA, QUADRADO))
+    card_list.append(Card(SIBERIA, TRIANGULO))
+    card_list.append(Card(SUDAO, QUADRADO))
+    card_list.append(Card(SUECIA, CIRCULO))
+    card_list.append(Card(SUMATRA, QUADRADO))
+    card_list.append(Card(TCHITA, TRIANGULO))
+    card_list.append(Card(VANCOUVER, TRIANGULO))
+    card_list.append(Card(VENEZUELA, TRIANGULO))
+    card_list.append(Card(VIETNA, TRIANGULO))
+    card_list.append(Card(VLADIVOSTOK, CIRCULO))
+    card_list.append(Card(CORINGA, CORINGA))
 
     player.territories.append(terr)
     terr.owner = player
@@ -103,7 +219,9 @@ if __name__ == '__main__':
         elif option == 2:
             pass
         elif option == 3:
-            pass
+            exchange_number = 0
+            player.exchange_cards(card_list, exchange_number)
+
         elif option == 4:
             pass
         elif option == 5:

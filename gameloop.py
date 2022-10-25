@@ -11,6 +11,7 @@ class GameLoop:
         self.colors = [VERMELHO, AZUL, VERDE, AMARELO, PRETO, BRANCO]
         self.players = []
         self.cards = []
+        self.used_cards = []
         self.objective_cards = []
         self.continents = []
         self.territories = []
@@ -18,6 +19,7 @@ class GameLoop:
         self.turn = -1
         self.current_player = None
         self.winner = None
+        self.exchange_number = 0
 
         # adiciona jogadores a lista
         for i in range(num_players):
@@ -222,7 +224,8 @@ class GameLoop:
         if cards_quantity < 3:
             return
         if cards_quantity >= 5:
-            self.cards = self.current_player.exchange_cards(self.cards)
+            self.used_cards = self.used_cards + self.current_player.exchange_cards(self.cards, self.exchange_number)
+            self.exchange_number += 1
             return
         print(f"{self.current_player} deseja trocar cartas?")
         print("1 - Sim")
@@ -230,7 +233,8 @@ class GameLoop:
         while True:
             option = input("Opcao: ")
             if option == "1":
-                self.cards = self.current_player.exchange_cards(self.cards)
+                self.used_cards = self.used_cards + self.current_player.exchange_cards(self.cards, self.exchange_number)
+                self.exchange_number += 1
                 break
             elif option == "2":
                 break
