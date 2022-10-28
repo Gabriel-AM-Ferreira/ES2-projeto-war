@@ -115,6 +115,13 @@ class GameLoop:
         # distribui os territorios aos jogadores aleatoriamente
         shuffle(self.territories)
         shuffle(self.players)
+
+        """
+        for i, territory in enumerate(self.territories):
+            territory.owner = self.players[i % len(self.players)]
+            self.players[i % len(self.players)].territories.append(territory)
+        """
+
         for i in range(len(self.territories)):
             self.territories[i].owner = self.players[i % len(self.players)]
             self.territories[i].owner.territories.append(self.territories[i])
@@ -223,7 +230,7 @@ class GameLoop:
         cards_quantity = len(self.current_player.cards)
         if cards_quantity < 3:
             return
-        if cards_quantity >= 5:
+        elif cards_quantity >= 5:
             self.used_cards = self.used_cards + self.current_player.exchange_cards(self.cards, self.exchange_number)
             self.exchange_number += 1
             return
@@ -233,7 +240,7 @@ class GameLoop:
         while True:
             option = input("Opcao: ")
             if option == "1":
-                self.used_cards = self.used_cards + self.current_player.exchange_cards(self.cards, self.exchange_number)
+                self.used_cards = self.used_cards + self.current_player.exchange_cards(self.exchange_number)
                 self.exchange_number += 1
                 break
             elif option == "2":
