@@ -4,16 +4,6 @@ from continent import *
 from constants import *
 from card import *
 
-# tabela de trocas war
-# 3 cartas iguais = 4 tropas
-# 3 cartas diferentes = 6 tropas
-# 4 cartas iguais = 8 tropas
-# 4 cartas diferentes = 10 tropas
-# 5 cartas iguais = 15 tropas
-# 5 cartas diferentes = 20 tropas
-# 6 cartas iguais = 25 tropas
-# 6 cartas diferentes = 30 tropas
-
 
 class Player:
     def __init__(self, name):
@@ -37,21 +27,27 @@ class Player:
     def add_troops(self, troops_to_add, territory_list):
         while troops_to_add > 0:
             print(f"Você tem {troops_to_add} tropas para distribuir.")
-            while True:
-                territory_name = input(f"Em qual territorio deseja adicionar tropas {self.name}?\n{[territory.name for territory in territory_list]}\n")
-                terr = self.get_territory(territory_name, territory_list)
-                if terr is not None:
-                    break
-                print("Territorio invalido")
-
-            while True:
-                quantity = int(input("Quantas tropas deseja adicionar? "))
-                if quantity <= troops_to_add and quantity > 0:
-                    break
-                print("Quantidade invalida de tropas")            
-
+            terr = self.ask_territory(territory_list, "adicionar tropas")
+            quantity = self.ask_quantity(troops_to_add, "adicionar")        
             terr.add_troops(quantity)
             troops_to_add -= quantity
+
+    def ask_territory(self, territory_list, action):
+        while True:
+            territory_name = input(f"Qual territorio deseja {action}?\n{[territory.name for territory in territory_list]}\n")
+            terr = self.get_territory(territory_name, territory_list)
+            if terr is not None:
+                break
+            print("Territorio invalido")
+        return terr
+
+    def ask_quantity(self, troops, action):
+        while True:
+            quantity = int(input(f"Quantas tropas deseja {action}? "))
+            if quantity <= troops and quantity > 0:
+                break
+            print("Quantidade invalida de tropas")
+        return quantity
 
     def get_territory(self, territory_name, territory_list):
         for territory in territory_list:
@@ -63,12 +59,7 @@ class Player:
         cards_to_exchange = []
         while True:
             for _ in range(3):
-                while True:
-                    card_name = input(f"Qual carta deseja trocar?\n{[card.territory for card in self.cards]}\n")
-                    card = self.get_card(card_name)
-                    if card is not None:
-                        break
-                    print("Carta invalida")
+                card = self.ask_card()
                 cards_to_exchange.append(card)
                 self.cards.remove(card)
             if self.is_valid_exchange(cards_to_exchange):
@@ -80,8 +71,16 @@ class Player:
         # verficar se o jogador possui os territorios das cartas
         self.cards_that_have_territories(cards_to_exchange)
 
-        self.add_troops(4+(exchange_number*2), self.territories)
+        self.add_troops(self.get_troops_to_add(exchange_number), self.territories)
         return cards_to_exchange
+
+    def ask_card(self):
+        while True:
+            card_name = input(f"Qual carta deseja trocar?\n{[card.territory for card in self.cards]}\n")
+            card = self.get_card(card_name)
+            if card is not None:
+                return card
+            print("Carta invalida")
 
     def is_valid_exchange(self, cards_to_exchange):
         if len(cards_to_exchange) != 3:
@@ -92,7 +91,6 @@ class Player:
             return True
         return False
 
-    # retorna true se as cartas tem o mesmo simbolo (deve contar o coringa)
     def same_symbol(self, cards_to_exchange):
         symbols = []
         for card in cards_to_exchange:
@@ -125,6 +123,9 @@ class Player:
             for territory in self.territories:
                 if territory.name == card.territory:
                     territory.add_troops(2)
+
+    def get_troops_to_add(self, exchange_number):
+        return max(4+(exchange_number*2), (exchange_number-1)*5)
 
 
     
