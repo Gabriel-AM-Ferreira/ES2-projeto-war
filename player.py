@@ -13,7 +13,7 @@ class Player:
         self.cards = []
         self.territories = []
         self.continents = []
-        self.conquered_territoty = False
+        self.conquered_territory = False
 
 
     def add_normal_troops(self, troops_to_add):
@@ -27,23 +27,23 @@ class Player:
     def add_troops(self, troops_to_add, territory_list):
         while troops_to_add > 0:
             print(f"Você tem {troops_to_add} tropas para distribuir.")
-            terr = self.ask_territory(territory_list, "adicionar tropas")
-            quantity = self.ask_quantity(troops_to_add, "adicionar")        
+            terr = self.ask_territory(territory_list, "Qual territorio deseja adicionar tropas?")
+            quantity = self.ask_quantity(troops_to_add, "Quantas tropas deseja adicionar?")    
             terr.add_troops(quantity)
             troops_to_add -= quantity
 
-    def ask_territory(self, territory_list, action):
+    def ask_territory(self, territory_list, question):
         while True:
-            territory_name = input(f"Qual territorio deseja {action}?\n{[territory.name for territory in territory_list]}\n")
+            territory_name = input(f"{question}\n{[territory.name for territory in territory_list]}\n")
             terr = self.get_territory(territory_name, territory_list)
             if terr is not None:
                 break
             print("Territorio invalido")
         return terr
 
-    def ask_quantity(self, troops, action):
+    def ask_quantity(self, troops, question):
         while True:
-            quantity = int(input(f"Quantas tropas deseja {action}? "))
+            quantity = int(input(f"{question}"))
             if quantity <= troops and quantity > 0:
                 break
             print("Quantidade invalida de tropas")

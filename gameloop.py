@@ -249,7 +249,99 @@ class GameLoop:
 
 
     def attack_phase(self):
-        pass
+        print(f"Fase de ataque do {self.current_player.name}")
+        while True:
+            print("1 - Atacar")
+            print("2 - Passar")
+            option = input("Opcao: ")
+            if option == "1":
+                self.attack()
+            elif option == "2":
+                break
+            else:
+                print("Opcao invalida!")
+
+    def attack(self):
+        # escolhe o territorio atacante
+        attacking_territory = self.current_player.ask_territory(self.current_player.territories, "Qual o territorio atacante?")
+        # escolhe o territorio alvo
+        target_territory = self.current_player.ask_territory(attacking_territory.neighbors, "Qual o territorio alvo?")
+        # escolhe o numero de tropas
+        attacking_troops = self.choose_attacking_troops(attacking_territory)
+        # escolhe o numero de tropas do alvo
+        target_troops = self.choose_defending_troops(target_territory)
+        # realiza o ataque
+        self.combat(attacking_territory, target_territory, attacking_troops, target_troops)
+
+
+    def choose_attacking_troops(self, attacking_territory):
+        print(f"O territorio {attacking_territory.name} possui {attacking_territory.troops} tropas.")
+        return self.current_player.ask_quantity(attacking_territory.troops-1, "Com quantas tropas deseja atacar?")
+
+    def choose_defending_troops(self, target_territory):
+        print(f"O territorio {target_territory.name} possui {target_territory.troops} tropas.")
+        return self.current_player.ask_quantity(target_territory.troops, "Com quantas tropas deseja defender?")    
+
+    def combat(self, attacking_territory, target_territory, attacking_troops, target_troops):
+        # calcula os dados
+        dice = Dice()
+        attacking_dices = dice.roll_many(attacking_troops)
+        target_dices = dice.roll_many(target_troops)
+        # ordena os dados
+        attacking_dices.sort(reverse=True)
+        target_dices.sort(reverse=True)
+        # compara os dados
+        failed_attacks = 0
+        for i in range(min([attacking_troops, target_troops])):
+            if attacking_dices[i] > target_dices[i]:
+                target_territory.remove_troops(1)
+            else:
+                attacking_territory.remove_troops(1)
+                failed_attacks += 1
+
+        # verifica se o territorio foi conquistado
+        if target_territory.troops == 0:
+            troops_to_move = self.current_player.ask_quantity(attacking_troops - failed_attacks, "Quantas tropas deseja mover?")
+            self.conquer_territory(attacking_territory, target_territory, troops_to_move)
+        else:
+            print("O ataque falhou!")
+
+    def conquer_territory(self, attacking_territory, target_territory, attacking_troops):
+        # territorio conquistado
+        self.current_player.conquered_territory = True
+        # remove as tropas do territorio atacante
+        attacking_territory.remove_troops(attacking_troops)
+        # transfere as tropas para o territorio conquistado
+        target_territory.add_troops(attacking_troops)
+        # verifica se o jogador defensor perdeu o continente
+        self.check_continent_loss(target_territory)
+        # transfere o territorio conquistado para o jogador atacante
+        self.transfer_territory(target_territory)
+        # verifica se o jogador atacante conquistou o continente
+        self.check_continent_conquest(target_territory)
+       
+        
+    def check_continent_loss(self, target_territory):
+        continent = target_territory.continent
+        if continent in target_territory.owner.continents:
+            target_territory.owner.continents.remove(continent)
+            print(f"O {target_territory.owner.name} perdeu o continente {continent.name}!")
+
+    def transfer_territory(self, target_territory):
+        target_territory.owner.remove_territory(target_territory)
+        self.current_player.add_territory(target_territory) 
+        target_territory.owner = self.current_player
+
+    def check_continent_conquest(self, target_territory):
+        continent = target_territory.continent
+        conquered = True
+        for territory in continent.territories:
+            if territory.owner != self.current_player:
+                conquered = False
+                break
+        if conquered:
+            self.current_player.add_continent(continent)
+            print(f"O {self.current_player.name} conquistou o continente {continent.name}!")
 
     def move_troops_phase(self):
         pass
