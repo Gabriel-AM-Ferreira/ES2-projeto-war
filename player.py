@@ -3,6 +3,8 @@ from territory import *
 from continent import *
 from constants import *
 from card import *
+from inputPlayer import ask_quantity, ask_card, ask_territory, ask_quantity_combat
+from validator import is_valid_exchange
 
 
 class Player:
@@ -27,42 +29,19 @@ class Player:
     def add_troops(self, troops_to_add, territory_list):
         while troops_to_add > 0:
             print(f"Você tem {troops_to_add} tropas para distribuir.")
-            terr = self.ask_territory(territory_list, "Qual territorio deseja adicionar tropas?")
-            quantity = self.ask_quantity(troops_to_add, "Quantas tropas deseja adicionar?")    
+            terr = ask_territory(territory_list, "Qual territorio deseja adicionar tropas?")
+            quantity = ask_quantity(troops_to_add, "Quantas tropas deseja adicionar?")    
             terr.add_troops(quantity)
             troops_to_add -= quantity
-
-    def ask_territory(self, territory_list, question):
-        while True:
-            territory_name = input(f"{question}\n{[territory.name for territory in territory_list]}\n")
-            terr = self.get_territory(territory_name, territory_list)
-            if terr is not None:
-                break
-            print("Territorio invalido")
-        return terr
-
-    def ask_quantity(self, troops, question):
-        while True:
-            quantity = int(input(f"{question}"))
-            if quantity <= troops and quantity > 0:
-                break
-            print("Quantidade invalida de tropas")
-        return quantity
-
-    def get_territory(self, territory_name, territory_list):
-        for territory in territory_list:
-            if territory.name == territory_name:
-                return territory
-        return None
 
     def exchange_cards(self, exchange_number):
         cards_to_exchange = []
         while True:
             for _ in range(3):
-                card = self.ask_card()
+                card = ask_card(self.cards)
                 cards_to_exchange.append(card)
                 self.cards.remove(card)
-            if self.is_valid_exchange(cards_to_exchange):
+            if is_valid_exchange(cards_to_exchange):
                 break
             print("Troca invalida")
             for card in cards_to_exchange:
@@ -71,52 +50,9 @@ class Player:
         # verficar se o jogador possui os territorios das cartas
         self.cards_that_have_territories(cards_to_exchange)
 
-        self.add_troops(self.get_troops_to_add(exchange_number), self.territories)
+        self.add_troops(self.get_troops_by_exchange(exchange_number), self.territories)
         return cards_to_exchange
 
-    def ask_card(self):
-        while True:
-            card_name = input(f"Qual carta deseja trocar?\n{[card.territory for card in self.cards]}\n")
-            card = self.get_card(card_name)
-            if card is not None:
-                return card
-            print("Carta invalida")
-
-    def is_valid_exchange(self, cards_to_exchange):
-        if len(cards_to_exchange) != 3:
-            return False
-        if self.same_symbol(cards_to_exchange):
-            return True
-        if self.diff_symbols(cards_to_exchange):
-            return True
-        return False
-
-    def same_symbol(self, cards_to_exchange):
-        symbols = []
-        for card in cards_to_exchange:
-            if card.symbol != CORINGA:
-                symbols.append(card.symbol)
-        if len(set(symbols)) == 1:
-            return True
-        return False
-
-    def diff_symbols(self, cards_to_exchange):
-        num_coringas = 0
-        symbols = []
-        for card in cards_to_exchange:
-            if card.symbol == CORINGA:
-                num_coringas += 1
-            else:
-                symbols.append(card.symbol)
-        if len(set(symbols)) + num_coringas == 3:
-            return True
-        return False
-
-    def get_card(self, card_name):
-        for card in self.cards:
-            if card.territory == card_name:
-                return card
-        return None
 
     def cards_that_have_territories(self, cards_to_exchange):
         for card in cards_to_exchange:
@@ -124,11 +60,43 @@ class Player:
                 if territory.name == card.territory:
                     territory.add_troops(2)
 
-    def get_troops_to_add(self, exchange_number):
+    def get_troops_by_exchange(self, exchange_number):
         return max(4+(exchange_number*2), (exchange_number-1)*5)
 
-
+    def get_attacking_territory(self):
+        return ask_territory(self.territories, "Com qual território deseja atacar?")
     
+    def get_defending_territory(self, neighbors):
+        for neighbor in neighbors:
+            if neighbor.owner == self:
+                neighbors.remove(neighbor)
+        return ask_territory(neighbors, "Qual o territorio alvo?")
+
+    def choose_attacking_troops(self, attacking_territory):
+        print(f"O territorio {attacking_territory.name} possui {attacking_territory.troops} tropas.")
+        return ask_quantity_combat(attacking_territory.troops-1, "Com quantas tropas deseja atacar?")
+
+    def choose_defending_troops(self, defending_territory):
+        print(f"O territorio {defending_territory.name} possui {defending_territory.troops} tropas.")
+        return ask_quantity_combat(defending_territory.troops, "Com quantas tropas deseja defender?")
+
+    def add_territory(self, territory):
+        self.territories.append(territory)
+        territory.owner = self
+        self.conquered_territory = True
+    
+    def remove_territory(self, territory):
+        self.territories.remove(territory)
+        territory.owner = None
+
+    def add_continent(self, continent):
+        self.continents.append(continent)
+
+    def remove_continent(self, continent):
+        self.continents.remove(continent)
+        
+
+
 
 if __name__ == '__main__':
     player = Player("Matheus")

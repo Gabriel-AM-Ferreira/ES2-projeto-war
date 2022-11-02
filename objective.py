@@ -4,6 +4,6 @@ class Objective:
         self.owner = None
         self.is_complete = False
 
-    def is_complete(self):
-        pass
+    def is_completed(self, player):
+        return False
     

@@ -6,6 +6,12 @@ from objective import *
 from constants import *
 from dice import *
 from random import shuffle
+from distributePhase import *
+from attackPhase import *
+from movementPhase import *
+from getObject import get_object_by_name
+from inputPlayer import ask_player_name, ask_color
+
 class GameLoop:
     def __init__(self, num_players):
         self.colors = [VERMELHO, AZUL, VERDE, AMARELO, PRETO, BRANCO]
@@ -23,22 +29,15 @@ class GameLoop:
 
         # adiciona jogadores a lista
         for i in range(num_players):
-            self.players.append(Player("Jogador " + str(i + 1)))
+            player = Player(ask_player_name())
+            self.players.append(player)
+            color = ask_color(self.colors)
+            player.color = color
+            self.colors.remove(color)
 
         for player in self.players:
             print(f"Jogador {player.name} criado.")
-
-        
-        # escolha de cores dos jogadores
-        for player in self.players:
-            print("Escolha uma cor para o jogador", player.name)
-            for color in self.colors:
-                print(color)
-            player.color = input()
-            self.colors.remove(player.color)
-        
-        for player in self.players:
-            print(player.name, "escolheu a cor", player.color)
+            print(player.name, "escolheu a cor", player.color)            
         
         # adiciona cartas de objetivo a lista
         self.objective_cards.append(Objective(OBJETIVO_1))
@@ -111,16 +110,17 @@ class GameLoop:
         self.territories.append(Territory(AUSTRALIA, OCEANIA, [SUMATRA, BORNEU, NOVA_GUINE], TROPAS_MINIMAS))
         self.territories.append(Territory(NOVA_GUINE, OCEANIA, [AUSTRALIA, BORNEU], TROPAS_MINIMAS))
 
+        # adiciona continentes a lista COM PROBLEMA
+        self.continents.append(Continent(AFRICA, BONUS_ASIA, self.territories))
+        self.continents.append(Continent(AMERICA_DO_NORTE, BONUS_AMERICA_DO_NORTE, self.territories))
+        self.continents.append(Continent(AMERICA_DO_SUL, BONUS_AMERICA_DO_SUL, self.territories))
+        self.continents.append(Continent(ASIA, BONUS_ASIA, self.territories))
+        self.continents.append(Continent(EUROPA, BONUS_EUROPA, self.territories))
+        self.continents.append(Continent(OCEANIA, BONUS_OCEANIA, self.territories))
 
         # distribui os territorios aos jogadores aleatoriamente
         shuffle(self.territories)
         shuffle(self.players)
-
-        """
-        for i, territory in enumerate(self.territories):
-            territory.owner = self.players[i % len(self.players)]
-            self.players[i % len(self.players)].territories.append(territory)
-        """
 
         for i in range(len(self.territories)):
             self.territories[i].owner = self.players[i % len(self.players)]
@@ -129,15 +129,6 @@ class GameLoop:
         for player in self.players:
             print(f"Territorios do jogador {player.name}: {[territory.name for territory in player.territories]}")
             print(len(player.territories))
-
-        
-        # adiciona continentes a lista
-        self.continents.append(Continent(AFRICA, BONUS_ASIA, self.territories))
-        self.continents.append(Continent(AMERICA_DO_NORTE, BONUS_AMERICA_DO_NORTE, self.territories))
-        self.continents.append(Continent(AMERICA_DO_SUL, BONUS_AMERICA_DO_SUL, self.territories))
-        self.continents.append(Continent(ASIA, BONUS_ASIA, self.territories))
-        self.continents.append(Continent(EUROPA, BONUS_EUROPA, self.territories))
-        self.continents.append(Continent(OCEANIA, BONUS_OCEANIA, self.territories))
 
         # adiciona cartas a lista
         self.cards.append(Card(AFRICA_DO_SUL, TRIANGULO))
@@ -184,6 +175,23 @@ class GameLoop:
         self.cards.append(Card(VLADIVOSTOK, CIRCULO))
         self.cards.append(Card(CORINGA, CORINGA))
         
+        # embaralha as cartas
+        shuffle(self.cards)
+
+        # cria grafo dos territorios
+        self.create_map()
+
+        
+
+    
+    def create_map(self):
+        for territory in self.territories:
+            territory.continent = get_object_by_name(territory.continent, self.continents)
+            print(territory.name, territory.continent.name)
+            neighbor_list = []
+            for neighbor_name in territory.neighbors:
+                neighbor_list.append(get_object_by_name(neighbor_name, self.territories))
+            territory.neighbors = neighbor_list
 
 
     def start(self):
@@ -202,7 +210,7 @@ class GameLoop:
                 
     def turns_phases(self):
         # fase de distribuicao de tropas
-        self.distribute_troops()
+        self.distribute_troops_phase()
         if self.turn > 0:
             # fase de ataque
             self.attack_phase()
@@ -211,42 +219,9 @@ class GameLoop:
             # recebe carta de territorio
             self.give_territory_card()
 
-    def distribute_troops(self):
-        print(f"Distribuicao de tropas do {self.current_player.name}") 
-        # pega o numero de territorios do jogador
-        number_of_territories = len(self.current_player.territories)
-        # calcula o numero de tropas a serem distribuidas
-        troops_to_distribute = max([3, number_of_territories // 2])
-        # adiciona as tropas distribuidas ao jogador
-        self.current_player.add_normal_troops(troops_to_distribute)
-        # adiciona tropas extras dos continentes
-        self.current_player.add_extra_troops()
-        # verifica se o jogador quer fazer trocas
-        self.cards_exchange()
-                
-        print(f"O {self.current_player.name} recebeu {troops_to_distribute} tropas.")
-
-    def cards_exchange(self):
-        cards_quantity = len(self.current_player.cards)
-        if cards_quantity < 3:
-            return
-        elif cards_quantity >= 5:
-            self.used_cards = self.used_cards + self.current_player.exchange_cards(self.cards, self.exchange_number)
-            self.exchange_number += 1
-            return
-        print(f"{self.current_player} deseja trocar cartas?")
-        print("1 - Sim")
-        print("2 - Nao")
-        while True:
-            option = input("Opcao: ")
-            if option == "1":
-                self.used_cards = self.used_cards + self.current_player.exchange_cards(self.exchange_number)
-                self.exchange_number += 1
-                break
-            elif option == "2":
-                break
-            print("Opcao invalida!")
-
+    def distribute_troops_phase(self):
+        distribute_troops(self.current_player)
+        self.used_cards, self.exchange_number = cards_exchange(self.current_player, self.exchange_number, self.used_cards)
 
     def attack_phase(self):
         print(f"Fase de ataque do {self.current_player.name}")
@@ -255,102 +230,37 @@ class GameLoop:
             print("2 - Passar")
             option = input("Opcao: ")
             if option == "1":
-                self.attack()
+                attack(self.current_player)
             elif option == "2":
                 break
             else:
                 print("Opcao invalida!")
 
-    def attack(self):
-        # escolhe o territorio atacante
-        attacking_territory = self.current_player.ask_territory(self.current_player.territories, "Qual o territorio atacante?")
-        # escolhe o territorio alvo
-        target_territory = self.current_player.ask_territory(attacking_territory.neighbors, "Qual o territorio alvo?")
-        # escolhe o numero de tropas
-        attacking_troops = self.choose_attacking_troops(attacking_territory)
-        # escolhe o numero de tropas do alvo
-        target_troops = self.choose_defending_troops(target_territory)
-        # realiza o ataque
-        self.combat(attacking_territory, target_territory, attacking_troops, target_troops)
-
-
-    def choose_attacking_troops(self, attacking_territory):
-        print(f"O territorio {attacking_territory.name} possui {attacking_territory.troops} tropas.")
-        return self.current_player.ask_quantity(attacking_territory.troops-1, "Com quantas tropas deseja atacar?")
-
-    def choose_defending_troops(self, target_territory):
-        print(f"O territorio {target_territory.name} possui {target_territory.troops} tropas.")
-        return self.current_player.ask_quantity(target_territory.troops, "Com quantas tropas deseja defender?")    
-
-    def combat(self, attacking_territory, target_territory, attacking_troops, target_troops):
-        # calcula os dados
-        dice = Dice()
-        attacking_dices = dice.roll_many(attacking_troops)
-        target_dices = dice.roll_many(target_troops)
-        # ordena os dados
-        attacking_dices.sort(reverse=True)
-        target_dices.sort(reverse=True)
-        # compara os dados
-        failed_attacks = 0
-        for i in range(min([attacking_troops, target_troops])):
-            if attacking_dices[i] > target_dices[i]:
-                target_territory.remove_troops(1)
-            else:
-                attacking_territory.remove_troops(1)
-                failed_attacks += 1
-
-        # verifica se o territorio foi conquistado
-        if target_territory.troops == 0:
-            troops_to_move = self.current_player.ask_quantity(attacking_troops - failed_attacks, "Quantas tropas deseja mover?")
-            self.conquer_territory(attacking_territory, target_territory, troops_to_move)
-        else:
-            print("O ataque falhou!")
-
-    def conquer_territory(self, attacking_territory, target_territory, attacking_troops):
-        # territorio conquistado
-        self.current_player.conquered_territory = True
-        # remove as tropas do territorio atacante
-        attacking_territory.remove_troops(attacking_troops)
-        # transfere as tropas para o territorio conquistado
-        target_territory.add_troops(attacking_troops)
-        # verifica se o jogador defensor perdeu o continente
-        self.check_continent_loss(target_territory)
-        # transfere o territorio conquistado para o jogador atacante
-        self.transfer_territory(target_territory)
-        # verifica se o jogador atacante conquistou o continente
-        self.check_continent_conquest(target_territory)
-       
-        
-    def check_continent_loss(self, target_territory):
-        continent = target_territory.continent
-        if continent in target_territory.owner.continents:
-            target_territory.owner.continents.remove(continent)
-            print(f"O {target_territory.owner.name} perdeu o continente {continent.name}!")
-
-    def transfer_territory(self, target_territory):
-        target_territory.owner.remove_territory(target_territory)
-        self.current_player.add_territory(target_territory) 
-        target_territory.owner = self.current_player
-
-    def check_continent_conquest(self, target_territory):
-        continent = target_territory.continent
-        conquered = True
-        for territory in continent.territories:
-            if territory.owner != self.current_player:
-                conquered = False
-                break
-        if conquered:
-            self.current_player.add_continent(continent)
-            print(f"O {self.current_player.name} conquistou o continente {continent.name}!")
 
     def move_troops_phase(self):
-        pass
+        print(f"Fase de movimentacao do {self.current_player.name}")
+        while True:
+            print("1 - Mover")
+            print("2 - Passar")
+            option = input("Opcao: ")
+            if option == "1":
+                print("Movimentacao")
+            #    move_troops(self.current_player)
+            elif option == "2":
+                break
+            else:
+                print("Opcao invalida!")
 
     def give_territory_card(self):
-        pass
+        if self.current_player.conquered_territory:
+            self.current_player.conquered_territory = False
+            self.current_player.cards.append(self.cards.pop())
+            print(f"O jogador {self.current_player.name} recebeu uma carta de territorio!")
+    
 
     def is_winner(self, player):
-        pass
+        return player.objective.is_completed(player)
+        
 
 
 if __name__ == '__main__':
