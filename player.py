@@ -84,6 +84,10 @@ class Player:
         print(f"O territorio {defending_territory.name} possui {defending_territory.troops} tropas.")
         return ask_quantity_combat(defending_territory.troops, "Com quantas tropas deseja defender?")
 
+    def choose_moving_troops(self, from_territory):
+        print(f"O territorio {from_territory.name} possui {from_territory.troops} tropas.")
+        return ask_quantity(from_territory.troops-1, "Com quantas tropas deseja mover?")
+
     def add_territory(self, territory):
         self.territories.append(territory)
         territory.owner = self
@@ -98,7 +102,20 @@ class Player:
 
     def remove_continent(self, continent):
         self.continents.remove(continent)
-        
+
+    def ask_from_territory(self):
+        while True:
+            terr = ask_territory(self.territories, "De qual territorio deseja mover tropas?")
+            if terr.troops > 1 and len(terr.get_friendly_neighbors()) > 0:
+                return terr
+            print("Esse territorio não pode mover tropas.")
+            if not ask_yes_or_no("Deseja continuar movendo tropas?"):
+                return None
+
+    def ask_to_territory(self, from_territory):
+        friendly_neighbors = from_territory.get_friendly_neighbors()
+        return ask_territory(friendly_neighbors, "Para qual territorio deseja mover tropas?")
+       
 
 
 

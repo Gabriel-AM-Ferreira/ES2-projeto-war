@@ -245,7 +245,7 @@ class GameLoop:
             option = input("Opcao: ")
             if option == "1":
                 print("Movimentacao")
-            #    move_troops(self.current_player)
+                move_troops(self.current_player)
             elif option == "2":
                 break
             else:

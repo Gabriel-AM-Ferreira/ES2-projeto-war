@@ -21,5 +21,12 @@ class Territory:
                 hostile_neighbors.append(neighbor)
         return hostile_neighbors
 
+    def get_friendly_neighbors(self):
+        friendly_neighbors = []
+        for neighbor in self.neighbors:
+            if neighbor.owner == self.owner:
+                friendly_neighbors.append(neighbor)
+        return friendly_neighbors
+
         
     
