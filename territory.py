@@ -14,5 +14,12 @@ class Territory:
     def remove_troops(self, number):
         self.troops -= number
 
+    def get_hostile_neighbors(self):
+        hostile_neighbors = []
+        for neighbor in self.neighbors:
+            if neighbor.owner != self.owner:
+                hostile_neighbors.append(neighbor)
+        return hostile_neighbors
+
         
     

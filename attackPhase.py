@@ -3,9 +3,10 @@ from inputPlayer import ask_quantity
 
 def attack(player):
     # escolhe o territorio atacante
-    attacking_territory = player.get_attacking_territory()
+    if (attacking_territory := player.get_attacking_territory()) is None:
+        return
     # escolhe o territorio alvo
-    target_territory = player.get_defending_territory(attacking_territory.neighbors)
+    target_territory = player.get_defending_territory(attacking_territory)
     # escolhe o numero de tropas
     attacking_troops = player.choose_attacking_troops(attacking_territory)
     # escolhe o numero de tropas do alvo

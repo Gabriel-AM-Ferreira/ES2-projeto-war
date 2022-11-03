@@ -47,3 +47,12 @@ def ask_card(cards):
         if card is not None:
             return card
         print("Carta invalida")
+
+def ask_yes_or_no(question):
+    while True:
+        answer = input(f"{question} (s/n)\n")
+        if answer == "s":
+            return True
+        elif answer == "n":
+            return False
+        print("Resposta invalida")

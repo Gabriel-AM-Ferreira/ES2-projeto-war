@@ -3,7 +3,7 @@ from territory import *
 from continent import *
 from constants import *
 from card import *
-from inputPlayer import ask_quantity, ask_card, ask_territory, ask_quantity_combat
+from inputPlayer import ask_quantity, ask_card, ask_territory, ask_quantity_combat, ask_yes_or_no
 from validator import is_valid_exchange
 
 
@@ -57,20 +57,24 @@ class Player:
     def cards_that_have_territories(self, cards_to_exchange):
         for card in cards_to_exchange:
             for territory in self.territories:
-                if territory.name == card.territory:
+                if territory.name == card.name:
                     territory.add_troops(2)
 
     def get_troops_by_exchange(self, exchange_number):
         return max(4+(exchange_number*2), (exchange_number-1)*5)
 
     def get_attacking_territory(self):
-        return ask_territory(self.territories, "Com qual território deseja atacar?")
+        while True:
+            terr = ask_territory(self.territories, "Com qual território deseja atacar?")
+            if terr.troops > 1 and len(terr.get_hostile_neighbors()) > 0:
+                return terr
+            print("Esse territorio não pode atacar.")
+            if not ask_yes_or_no("Deseja continuar atacando?"):
+                return None
     
-    def get_defending_territory(self, neighbors):
-        for neighbor in neighbors:
-            if neighbor.owner == self:
-                neighbors.remove(neighbor)
-        return ask_territory(neighbors, "Qual o territorio alvo?")
+    def get_defending_territory(self, attacking_territory):
+        hostile_neighbors = attacking_territory.get_hostile_neighbors()
+        return ask_territory(hostile_neighbors, "Qual o territorio alvo?")
 
     def choose_attacking_troops(self, attacking_territory):
         print(f"O territorio {attacking_territory.name} possui {attacking_territory.troops} tropas.")
