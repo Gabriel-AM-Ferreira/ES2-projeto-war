@@ -19,10 +19,8 @@ class Continent:
         return True
 
     def conquer_continent (self, player):
-        for territory in self.territories:
-            if territory.owner != player:
-                return
-        player.continents.append(self)
+        if self.is_complete(player):
+            player.continents.append(self)
 
     def lose_continent (self, player):
         if self in player.continents:
