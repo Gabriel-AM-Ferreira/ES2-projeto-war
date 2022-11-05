@@ -28,13 +28,9 @@ class GameLoop:
         self.exchange_number = 0
 
         # adiciona jogadores a lista
-        for i in range(num_players):
-            player = Player(ask_player_name())
-            self.players.append(player)
-            color = ask_color(self.colors)
-            player.color = color
-            self.colors.remove(color)
+        self.add_players(num_players)
 
+        # mostra os jogadores e suas cores
         for player in self.players:
             print(f"Jogador {player.name} criado.")
             print(player.name, "escolheu a cor", player.color)            
@@ -55,15 +51,6 @@ class GameLoop:
         self.objective_cards.append(Objective(OBJETIVO_13))
         self.objective_cards.append(Objective(OBJETIVO_14))
 
-        
-        # distribui as cartas de objetivo aos jogadores
-        for player in self.players:
-            territory_die = Dice(len(self.objective_cards))
-            player.objective = self.objective_cards[territory_die.roll() - 1]
-            self.objective_cards.remove(player.objective)
-
-        for player in self.players:
-            print(player.name, "recebeu a carta de objetivo", player.objective.description)
 
         
         # cria grafo dos territórios
@@ -110,25 +97,13 @@ class GameLoop:
         self.territories.append(Territory(AUSTRALIA, OCEANIA, [SUMATRA, BORNEU, NOVA_GUINE], TROPAS_MINIMAS))
         self.territories.append(Territory(NOVA_GUINE, OCEANIA, [AUSTRALIA, BORNEU], TROPAS_MINIMAS))
 
-        # adiciona continentes a lista COM PROBLEMA
+        # adiciona continentes a lista
         self.continents.append(Continent(AFRICA, BONUS_ASIA, self.territories))
         self.continents.append(Continent(AMERICA_DO_NORTE, BONUS_AMERICA_DO_NORTE, self.territories))
         self.continents.append(Continent(AMERICA_DO_SUL, BONUS_AMERICA_DO_SUL, self.territories))
         self.continents.append(Continent(ASIA, BONUS_ASIA, self.territories))
         self.continents.append(Continent(EUROPA, BONUS_EUROPA, self.territories))
         self.continents.append(Continent(OCEANIA, BONUS_OCEANIA, self.territories))
-
-        # distribui os territorios aos jogadores aleatoriamente
-        shuffle(self.territories)
-        shuffle(self.players)
-
-        for i in range(len(self.territories)):
-            self.territories[i].owner = self.players[i % len(self.players)]
-            self.territories[i].owner.territories.append(self.territories[i])
-
-        for player in self.players:
-            print(f"Territorios do jogador {player.name}: {[territory.name for territory in player.territories]}")
-            print(len(player.territories))
 
         # adiciona cartas a lista
         self.cards.append(Card(AFRICA_DO_SUL, TRIANGULO))
@@ -175,7 +150,22 @@ class GameLoop:
         self.cards.append(Card(VLADIVOSTOK, CIRCULO))
         self.cards.append(Card(CORINGA, CORINGA))
         
-        # embaralha as cartas
+
+        # aleatoriza os jogadores
+        shuffle(self.players)
+
+        # distribui os territorios aos jogadores aleatoriamente
+        self.distribute_territories()
+
+        # mostra os territorios dos jogadores
+        for player in self.players:
+            print(f"Territorios do jogador {player.name}: {[territory.name for territory in player.territories]}")
+            print(len(player.territories))
+
+        # distribui as cartas de objetivo aos jogadores
+        self.distribute_objectives()
+
+        # embaralha as cartas de territorio
         shuffle(self.cards)
 
         # cria grafo dos territorios
@@ -201,6 +191,8 @@ class GameLoop:
             for player in self.players:
                 print(f"Jogador atual: {player.name}")
                 self.current_player = player
+                # verifica se o objetivo ainda pode ser alcançado
+                self.check_if_objective_can_be_completed(self.current_player)
                 self.turns_phases()
                 self.is_winner(self.current_player)
                 if self.winner is not None:
@@ -260,8 +252,38 @@ class GameLoop:
 
     def is_winner(self, player):
         return player.objective.is_completed(player)
-        
 
+    def check_if_objective_can_be_completed(self, player):
+        if re.search(player.color, player.objective.description):
+            player.objective = Objective(OBJETIVO_1)
+
+        change_objective = True
+        for p in self.players:
+            if re.search(p.color, player.objective.description):
+                change_objective = False
+                break
+        if change_objective:
+            player.objective = Objective(OBJETIVO_1)
+
+    def distribute_territories(self):
+        shuffle(self.territories)
+        for i in range(len(self.territories)):
+            self.territories[i].owner = self.players[i % len(self.players)]
+            self.territories[i].owner.territories.append(self.territories[i])
+
+    def add_players(self, num_players):
+        for i in range(num_players):
+            player = Player(ask_player_name())
+            self.players.append(player)
+            color = ask_color(self.colors)
+            player.color = color
+            self.colors.remove(color)
+
+    def distribute_objectives(self):
+        shuffle(self.objective_cards)
+        for player in self.players:
+            player.objective = self.objective_cards.pop()
+            print(f"O jogador {player.name} recebeu o objetivo: {player.objective.description}")
 
 if __name__ == '__main__':
     n = int(input("Digite o numero de jogadores: "))
