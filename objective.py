@@ -8,45 +8,40 @@ class Objective:
 
     # verificar se o objetivo do jogador foi concluído
     def is_complete(self):
+        # objetivo é conquistar 24 territorios
         if re.search('24', self.description):
-            return self.conquer_24()
-
+            return len(self.owner.territories) >= 24 
+        # objetivo é conquistar 18 territorios
         elif re.search('18', self.description):
             return self.conquer_18()
-
+        # objetivo é destruir um jogador
         elif re.search('Destruir', self.description):
             return self.destroy()
-
+        # objetivo é conquistar America do Norte
         elif re.search(AMERICA_DO_NORTE, self.description) and get_object_by_name(AMERICA_DO_NORTE, self.owner.continents) is not None:
-            if re.search(OCEANIA, self.description):
+            if re.search(OCEANIA, self.description): # Com Oceania
                 return get_object_by_name(OCEANIA, self.owner.continents) is not None
-            elif re.search(AFRICA, self.description): 
+            elif re.search(AFRICA, self.description):  # Com Africa
                 return get_object_by_name(AFRICA, self.owner.continents) is not None
-
+        # objetivo é conquistar Asia
         elif re.search(ASIA, self.description) and get_object_by_name(ASIA, self.owner.continents) is not None:
-            if re.search(AMERICA_DO_SUL, self.description):
+            if re.search(AMERICA_DO_SUL, self.description): # Com America do Sul
                 return get_object_by_name(AMERICA_DO_SUL, self.owner.continents) is not None
-            if re.search(AFRICA, self.description):
+            if re.search(AFRICA, self.description): # Com Africa
                 return get_object_by_name(AFRICA, self.owner.continents) is not None
-
+        # objetivo é conquistar Europa, um continente da sua escolha e
         elif re.search(EUROPA, self.description) and get_object_by_name(EUROPA, self.owner.continents) is not None and len(self.owner.continents)>=3:
-            if re.search(AMERICA_DO_SUL, self.description):
+            if re.search(AMERICA_DO_SUL, self.description): # America do Sul
                 return get_object_by_name(AMERICA_DO_SUL, self.owner.continents) is not None
-            elif re.search(OCEANIA, self.description):
+            elif re.search(OCEANIA, self.description): # Oceania
                 return get_object_by_name(OCEANIA, self.owner.continents) is not None
         return False
 
-    # verificar se o objetivo é destruir
+    # verificar se o jogador destruiu um jogador de certa cor
     def destroy(self):
         for d_p in self.owner.defeated_players:
-            if d_p.color in self.description:
+            if re.search(d_p.color, self.description):
                 return True
-        return False
-        
-    # verificar se o jogador conquistou 24 territorios
-    def conquer_24(self):
-        if len(self.owner.territories) >= 24:
-            return True
         return False
 
     # verificar se o jogador conquistou 18 territorios
