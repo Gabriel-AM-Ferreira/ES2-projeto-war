@@ -12,7 +12,6 @@ class Continent:
                 self.territories.append(territory)
         print(f"Continente {self.name} criado com {[terr.name for terr in self.territories]} territorios")
 
-    # por enquanto so serve pra testes
     def is_complete(self, player):
         for territory in self.territories:
             if territory.owner != player:

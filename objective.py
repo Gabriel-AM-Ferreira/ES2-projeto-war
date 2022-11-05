@@ -19,22 +19,22 @@ class Objective:
 
         elif re.search(AMERICA_DO_NORTE, self.description):
             if re.search(OCEANIA, self.description):
-                return is_continent_owned_by_player(AMERICA_DO_NORTE) and is_continent_owned_by_player(OCEANIA)
+                return is_continent_owned_by_player(AMERICA_DO_NORTE, self.owner) and is_continent_owned_by_player(OCEANIA, self.owner)
             elif re.search(AFRICA, self.description): 
-                return is_continent_owned_by_player(AMERICA_DO_NORTE) and is_continent_owned_by_player(AFRICA)
+                return is_continent_owned_by_player(AMERICA_DO_NORTE, self.owner) and is_continent_owned_by_player(AFRICA, self.owner)
 
         elif re.search(ASIA, self.description):
             if re.search(AMERICA_DO_SUL, self.description):
-                return is_continent_owned_by_player(ASIA) and is_continent_owned_by_player(AMERICA_DO_SUL)
+                return is_continent_owned_by_player(ASIA, self.owner) and is_continent_owned_by_player(AMERICA_DO_SUL, self.owner)
             if re.search(AFRICA, self.description):
-                return is_continent_owned_by_player(ASIA) and is_continent_owned_by_player(AFRICA)
+                return is_continent_owned_by_player(ASIA, self.owner) and is_continent_owned_by_player(AFRICA, self.owner)
 
         elif re.search(EUROPA, self.description) and len(self.owner.continents)>=3:
             if re.search(AMERICA_DO_SUL, self.description):
-                return is_continent_owned_by_player(EUROPA) and is_continent_owned_by_player(AMERICA_DO_SUL)
+                return is_continent_owned_by_player(EUROPA, self.owner) and is_continent_owned_by_player(AMERICA_DO_SUL, self.owner)
             elif re.search(OCEANIA, self.description):
-                return is_continent_owned_by_player(EUROPA) and is_continent_owned_by_player(OCEANIA)
-                
+                return is_continent_owned_by_player(EUROPA, self.owner) and is_continent_owned_by_player(OCEANIA, self.owner)
+
         return False
 
     def conquer(self, continent):
@@ -72,12 +72,3 @@ class Objective:
             if terr.troupes >= 2:
                 count += 1
         return count >= 18
-
-    # verificar se o jogador conquistou continentes
-    def conquer_continents(self):
-        
-
-    # verificar se o jogador conquistou um continente
-
-    
-        
