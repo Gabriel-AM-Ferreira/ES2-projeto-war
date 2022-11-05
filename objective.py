@@ -5,5 +5,9 @@ class Objective:
         self.is_complete = False
 
     def is_completed(self, player):
-        return False
-    
+        objective_types = {
+            "Destruir": self.destroy,
+        }
+        objective_types[self.description.split()[0]](player)
+        return self.is_complete
+

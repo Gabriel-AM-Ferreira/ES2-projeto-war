@@ -59,10 +59,19 @@ def check_continent_loss(player, continent):
         player.remove_continent(continent)
         print(f"O {player.name} perdeu o continente {continent.name}!")
 
-def transfer_territory(player, target_territory):
-    target_territory.owner.remove_territory(target_territory)
-    player.add_territory(target_territory)
-    target_territory.owner = player
+def transfer_territory(attacking_player, target_territory):
+    defending_player = target_territory.owner
+    defending_player.remove_territory(target_territory)
+    attacking_player.add_territory(target_territory)
+    target_territory.owner = attacking_player
+
+    check_player_elimination(attacking_player, defending_player)
+
+def check_player_elimination(attacking_player, defending_player):
+    if defending_player.territories == []:
+        attacking_player.defeated_players.append(defending_player)
+        attacking_player.cards.extend(defending_player.cards)
+        print(f"O {defending_player.name} foi eliminado!")
 
 def check_continent_conquest(player, continent):
     conquered = True

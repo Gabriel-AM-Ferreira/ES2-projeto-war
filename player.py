@@ -15,6 +15,7 @@ class Player:
         self.cards = []
         self.territories = []
         self.continents = []
+        self.defeated_players = []
         self.conquered_territory = False
 
 
