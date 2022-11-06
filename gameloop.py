@@ -11,6 +11,7 @@ from attackPhase import *
 from movementPhase import *
 from getObject import get_object_by_name
 from inputPlayer import ask_player_name, ask_color
+import re
 
 class GameLoop:
     def __init__(self, num_players):
@@ -156,6 +157,7 @@ class GameLoop:
 
         # distribui os territorios aos jogadores aleatoriamente
         self.distribute_territories()
+        self.continent_check()
 
         # mostra os territorios dos jogadores
         for player in self.players:
@@ -177,7 +179,6 @@ class GameLoop:
     def create_map(self):
         for territory in self.territories:
             territory.continent = get_object_by_name(territory.continent, self.continents)
-            print(territory.name, territory.continent.name)
             neighbor_list = []
             for neighbor_name in territory.neighbors:
                 neighbor_list.append(get_object_by_name(neighbor_name, self.territories))
@@ -194,8 +195,8 @@ class GameLoop:
                 # verifica se o objetivo ainda pode ser alcançado
                 self.check_if_objective_can_be_completed(self.current_player)
                 self.turns_phases()
-                self.is_winner(self.current_player)
-                if self.winner is not None:
+                if self.is_winner(self.current_player):
+                    self.winner = self.current_player
                     break
         # mostra o vencedor
         print(f"O jogador {self.winner.name} venceu!")
@@ -251,19 +252,23 @@ class GameLoop:
     
 
     def is_winner(self, player):
-        return player.objective.is_completed(player)
+        print(player.objective.description)
+        return player.objective.is_complete()
 
     def check_if_objective_can_be_completed(self, player):
-        if re.search(player.color, player.objective.description):
-            player.objective = Objective(OBJETIVO_1)
+        if re.search("Destruir", player.objective.description):
+            if re.search(player.color, player.objective.description):
+                player.objective = Objective(OBJETIVO_1)
+                player.objective.owner = player
 
-        change_objective = True
-        for p in self.players:
-            if re.search(p.color, player.objective.description):
-                change_objective = False
-                break
-        if change_objective:
-            player.objective = Objective(OBJETIVO_1)
+            change_objective = True
+            for p in self.players:
+                if re.search(p.color, player.objective.description):
+                    change_objective = False
+                    break
+            if change_objective:
+                player.objective = Objective(OBJETIVO_1)
+                player.objective.owner = player
 
     def distribute_territories(self):
         shuffle(self.territories)
@@ -283,11 +288,23 @@ class GameLoop:
         shuffle(self.objective_cards)
         for player in self.players:
             player.objective = self.objective_cards.pop()
+            player.objective.owner = player
             print(f"O jogador {player.name} recebeu o objetivo: {player.objective.description}")
+
+    def continent_check(self):
+        for player in self.players:
+            for continent in self.continents:
+                continent.conquer_continent(player)
 
 if __name__ == '__main__':
     n = int(input("Digite o numero de jogadores: "))
     game = GameLoop(n)
+    # teste para destruir jogador
+    # while(len(game.players[1].territories) > 1):
+    #     game.players[0].territories.append(game.players[1].territories.pop())
+    # game.players[0].objective = Objective(OBJETIVO_9)
+    # game.players[0].objective.owner = game.players[0]
+    # game.players[1].color = AZUL
     game.start()
 
 

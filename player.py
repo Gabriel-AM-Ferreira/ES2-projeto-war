@@ -116,6 +116,8 @@ class Player:
     def ask_to_territory(self, from_territory):
         friendly_neighbors = from_territory.get_friendly_neighbors()
         return ask_territory(friendly_neighbors, "Para qual territorio deseja mover tropas?")
+    
+    
        
 
 

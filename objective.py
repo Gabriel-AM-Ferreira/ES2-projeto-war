@@ -18,19 +18,19 @@ class Objective:
         elif re.search('Destruir', self.description):
             return self.destroy()
         # objetivo é conquistar America do Norte
-        elif re.search(AMERICA_DO_NORTE, self.description) and get_object_by_name(AMERICA_DO_NORTE, self.owner.continents) is not None:
+        elif re.search(AMERICA_DO_NORTE, self.description) and get_object_by_name(AMERICA_DO_NORTE, self.owner.continents):
             if re.search(OCEANIA, self.description): # Com Oceania
                 return get_object_by_name(OCEANIA, self.owner.continents) is not None
             elif re.search(AFRICA, self.description):  # Com Africa
                 return get_object_by_name(AFRICA, self.owner.continents) is not None
         # objetivo é conquistar Asia
-        elif re.search(ASIA, self.description) and get_object_by_name(ASIA, self.owner.continents) is not None:
+        elif re.search(ASIA, self.description) and get_object_by_name(ASIA, self.owner.continents):
             if re.search(AMERICA_DO_SUL, self.description): # Com America do Sul
                 return get_object_by_name(AMERICA_DO_SUL, self.owner.continents) is not None
             if re.search(AFRICA, self.description): # Com Africa
                 return get_object_by_name(AFRICA, self.owner.continents) is not None
         # objetivo é conquistar Europa, um continente da sua escolha e
-        elif re.search(EUROPA, self.description) and get_object_by_name(EUROPA, self.owner.continents) is not None and len(self.owner.continents)>=3:
+        elif re.search(EUROPA, self.description) and get_object_by_name(EUROPA, self.owner.continents) and len(self.owner.continents)>=3:
             if re.search(AMERICA_DO_SUL, self.description): # America do Sul
                 return get_object_by_name(AMERICA_DO_SUL, self.owner.continents) is not None
             elif re.search(OCEANIA, self.description): # Oceania
@@ -48,7 +48,7 @@ class Objective:
     def conquer_18(self):
         count  = 0
         for terr in self.owner.territories:
-            if terr.troupes >= 2:
+            if terr.troops >= 2:
                 count += 1
         return count >= 18
 
