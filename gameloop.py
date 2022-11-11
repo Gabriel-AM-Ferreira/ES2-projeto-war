@@ -5,30 +5,36 @@ from territory import *
 from objective import *
 from constants import *
 from dice import *
+from random import shuffle
+from distributePhase import *
+from attackPhase import *
+from movementPhase import *
+from getObject import get_object_by_name
+from inputPlayer import ask_player_name, ask_color
+import re
+
 class GameLoop:
     def __init__(self, num_players):
         self.colors = [VERMELHO, AZUL, VERDE, AMARELO, PRETO, BRANCO]
         self.players = []
         self.cards = []
+        self.used_cards = []
         self.objective_cards = []
         self.continents = []
         self.territories = []
         self.num_players = num_players
-        self.turn = 0
-        self.current_player = 0
+        self.turn = -1
+        self.current_player = None
         self.winner = None
+        self.exchange_number = 0
 
         # adiciona jogadores a lista
-        for i in range(num_players):
-            self.players.append(Player("Jogador " + str(i + 1)))
-        
-        # escolha de cores dos jogadores
+        self.add_players(num_players)
+
+        # mostra os jogadores e suas cores
         for player in self.players:
-            print("Escolha uma cor para o jogador", player.name)
-            for color in self.colors:
-                print(color)
-            player.color = input()
-            self.colors.remove(player.color)
+            print(f"Jogador {player.name} criado.")
+            print(player.name, "escolheu a cor", player.color)            
         
         # adiciona cartas de objetivo a lista
         self.objective_cards.append(Objective(OBJETIVO_1))
@@ -46,15 +52,8 @@ class GameLoop:
         self.objective_cards.append(Objective(OBJETIVO_13))
         self.objective_cards.append(Objective(OBJETIVO_14))
 
+
         
-        # distribui as cartas de objetivo aos jogadores
-        for player in self.players:
-            territory_die = Dice(len(self.objective_cards))
-            player.objective = self.objective_cards[territory_die.roll() - 1]
-            self.objective_cards.remove(player.objective)
-
-
-
         # cria grafo dos territórios
         self.territories.append(Territory(ALASCA, AMERICA_DO_NORTE, [MACKENZIE, VANCOUVER, VLADIVOSTOK], TROPAS_MINIMAS))
         self.territories.append(Territory(MACKENZIE, AMERICA_DO_NORTE, [ALASCA, VANCOUVER, GROELANDIA, OTTAWA], TROPAS_MINIMAS))
@@ -98,13 +97,6 @@ class GameLoop:
         self.territories.append(Territory(BORNEU, OCEANIA, [VIETNA, AUSTRALIA, NOVA_GUINE], TROPAS_MINIMAS))
         self.territories.append(Territory(AUSTRALIA, OCEANIA, [SUMATRA, BORNEU, NOVA_GUINE], TROPAS_MINIMAS))
         self.territories.append(Territory(NOVA_GUINE, OCEANIA, [AUSTRALIA, BORNEU], TROPAS_MINIMAS))
-
-
-        # distribui os territorios aos jogadores
-        player_dice = Dice(len(self.players))
-        for territory in self.territories:
-            territory.owner = self.players[player_dice.roll() - 1]
-
 
         # adiciona continentes a lista
         self.continents.append(Continent(AFRICA, BONUS_ASIA, self.territories))
@@ -158,25 +150,161 @@ class GameLoop:
         self.cards.append(Card(VIETNA, TRIANGULO))
         self.cards.append(Card(VLADIVOSTOK, CIRCULO))
         self.cards.append(Card(CORINGA, CORINGA))
+        
+
+        # aleatoriza os jogadores
+        shuffle(self.players)
+
+        # distribui os territorios aos jogadores aleatoriamente
+        self.distribute_territories()
+        self.continent_check()
+
+        # mostra os territorios dos jogadores
+        for player in self.players:
+            print(f"Territorios do jogador {player.name}: {[territory.name for territory in player.territories]}")
+            print(len(player.territories))
+
+        # distribui as cartas de objetivo aos jogadores
+        self.distribute_objectives()
+
+        # embaralha as cartas de territorio
+        shuffle(self.cards)
+
+        # cria grafo dos territorios
+        self.create_map()
+
+        
+
+    
+    def create_map(self):
+        for territory in self.territories:
+            territory.continent = get_object_by_name(territory.continent, self.continents)
+            neighbor_list = []
+            for neighbor_name in territory.neighbors:
+                neighbor_list.append(get_object_by_name(neighbor_name, self.territories))
+            territory.neighbors = neighbor_list
 
 
     def start(self):
-        while self.winner is not None:
+        while self.winner is None:
+            self.turn += 1
+            print(f"Turno atual: {self.turn}")
             for player in self.players:
+                print(f"Jogador atual: {player.name}")
                 self.current_player = player
+                # verifica se o objetivo ainda pode ser alcançado
+                self.check_if_objective_can_be_completed(self.current_player)
                 self.turns_phases()
-                self.is_winner(self.current_player)
+                if self.is_winner(self.current_player):
+                    self.winner = self.current_player
+                    break
         # mostra o vencedor
         print(f"O jogador {self.winner.name} venceu!")
                 
     def turns_phases(self):
         # fase de distribuicao de tropas
-        self.distribute_troops()
-        # fase de ataque
-        self.attack_phase()
-        # fase de movimentacao
-        self.move_troops_phase()
-        # recebe carta de territorio
-        self.give_territory_card()
+        self.distribute_troops_phase()
+        if self.turn > 0:
+            # fase de ataque
+            self.attack_phase()
+            # fase de movimentacao
+            self.move_troops_phase()
+            # recebe carta de territorio
+            self.give_territory_card()
 
+    def distribute_troops_phase(self):
+        distribute_troops(self.current_player)
+        self.used_cards, self.exchange_number = cards_exchange(self.current_player, self.exchange_number, self.used_cards)
+
+    def attack_phase(self):
+        print(f"Fase de ataque do {self.current_player.name}")
+        while True:
+            print("1 - Atacar")
+            print("2 - Passar")
+            option = input("Opcao: ")
+            if option == "1":
+                attack(self.current_player)
+            elif option == "2":
+                break
+            else:
+                print("Opcao invalida!")
+
+
+    def move_troops_phase(self):
+        print(f"Fase de movimentacao do {self.current_player.name}")
+        while True:
+            print("1 - Mover")
+            print("2 - Passar")
+            option = input("Opcao: ")
+            if option == "1":
+                print("Movimentacao")
+                move_troops(self.current_player)
+            elif option == "2":
+                break
+            else:
+                print("Opcao invalida!")
+
+    def give_territory_card(self):
+        if self.current_player.conquered_territory:
+            self.current_player.conquered_territory = False
+            self.current_player.cards.append(self.cards.pop())
+            print(f"O jogador {self.current_player.name} recebeu uma carta de territorio!")
     
+
+    def is_winner(self, player):
+        print(player.objective.description)
+        return player.objective.is_complete()
+
+    def check_if_objective_can_be_completed(self, player):
+        if re.search("Destruir", player.objective.description):
+            if re.search(player.color, player.objective.description):
+                player.objective = Objective(OBJETIVO_1)
+                player.objective.owner = player
+
+            change_objective = True
+            for p in self.players:
+                if re.search(p.color, player.objective.description):
+                    change_objective = False
+                    break
+            if change_objective:
+                player.objective = Objective(OBJETIVO_1)
+                player.objective.owner = player
+
+    def distribute_territories(self):
+        shuffle(self.territories)
+        for i in range(len(self.territories)):
+            self.territories[i].owner = self.players[i % len(self.players)]
+            self.territories[i].owner.territories.append(self.territories[i])
+
+    def add_players(self, num_players):
+        for i in range(num_players):
+            player = Player(ask_player_name())
+            self.players.append(player)
+            color = ask_color(self.colors)
+            player.color = color
+            self.colors.remove(color)
+
+    def distribute_objectives(self):
+        shuffle(self.objective_cards)
+        for player in self.players:
+            player.objective = self.objective_cards.pop()
+            player.objective.owner = player
+            print(f"O jogador {player.name} recebeu o objetivo: {player.objective.description}")
+
+    def continent_check(self):
+        for player in self.players:
+            for continent in self.continents:
+                continent.conquer_continent(player)
+
+if __name__ == '__main__':
+    n = int(input("Digite o numero de jogadores: "))
+    game = GameLoop(n)
+    # teste para destruir jogador
+    # while(len(game.players[1].territories) > 1):
+    #     game.players[0].territories.append(game.players[1].territories.pop())
+    # game.players[0].objective = Objective(OBJETIVO_9)
+    # game.players[0].objective.owner = game.players[0]
+    # game.players[1].color = AZUL
+    game.start()
+
+
