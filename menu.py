@@ -3,6 +3,6 @@ from menuteste import *
 
 class Menu:
     def __init__(self):
-        game = GameLoop()
+        game = GameLoop(3)
         game.start()
         

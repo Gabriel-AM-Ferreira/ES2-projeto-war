@@ -1,6 +1,6 @@
 
 class Card:
     def __init__(self, territory, symbol):
-        self.territory = territory
+        self.name = territory
         self.symbol = symbol
         
