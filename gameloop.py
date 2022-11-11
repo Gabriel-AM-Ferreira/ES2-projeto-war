@@ -5,7 +5,21 @@ from territory import *
 from objective import *
 from constants import *
 from dice import *
-class GameLoop:
+from pygame import *
+try:
+    import sys
+    import random
+    import math
+    import os
+    import getopt
+    import pygame
+    from socket import *
+    from pygame.locals import *
+except ImportError as err:
+    print(f"couldn't load module. {err}")
+    sys.exit(2)
+    
+class GameLoop(pygame.sprite.Sprite):
     def __init__(self, num_players):
         self.colors = [VERMELHO, AZUL, VERDE, AMARELO, PRETO, BRANCO]
         self.players = []
