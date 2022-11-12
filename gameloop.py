@@ -1,3 +1,4 @@
+
 try:
     import sys
     import random
@@ -49,48 +50,6 @@ class fisica():
 
         return botoes
 
-class Iniciar_jogo(pygame.sprite.Sprite,fisica):
-
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = fisica.load_png('novojogo.png')
-        self.screen = pygame.display.get_surface()
-        self.rect.center = self.screen.get_rect().center
-        self.valor=1
-        self.screen.blit(self.image,(self.screen.get_rect().centerx - self.image.get_rect()[2]/2,self.screen.get_rect().centery - self.image.get_rect()[3]/2))
-        
-
-    def update(self, a):
-
-        if((a==True) and (self.valor==1)):
-            self.image, self.rect = fisica.load_png('Novojogoclickado.png')
-            self.screen = pygame.display.get_surface()
-            self.rect.center = self.screen.get_rect().center
-            self.area = self.screen.get_rect()
-            self.valor=2
-            self.screen.blit(self.image,(self.screen.get_rect().centerx - self.image.get_rect()[2]/2,self.screen.get_rect().centery - self.image.get_rect()[3]/2))
-          
-        else:
-            if(self.valor==2 and a ==False):
-                self.image, self.rect = fisica.load_png('novojogo.png')
-                self.screen = pygame.display.get_surface()
-                self.rect.center = self.screen.get_rect().center
-                self.area = self.screen.get_rect()
-                self.valor=1
-                self.screen.blit(self.image,(self.screen.get_rect().centerx - self.image.get_rect()[2]/2,self.screen.get_rect().centery - self.image.get_rect()[3]/2))
-        
-class instancia_mapa(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = fisica.load_png('mapaWar.png')
-        self.screen = pygame.display.get_surface()
-        self.rect.center = self.screen.get_rect().center
-        self.valor=1
-        self.screen.blit(self.image,(0,0))
-        
-
-    def update(self, a):
-        pass
 
 
 class GameLoop:
@@ -108,20 +67,7 @@ class GameLoop:
         self.winner = None
         self.exchange_number = 0
 
-        pygame.init()
-
-        #criação da tela
-        size = width, height = 1600 ,  900
-        speed = [2, 2]
-        black = 0, 0, 0
-        screen = pygame.display.set_mode(size)
-
-        #pixelando o plano de fundo
-        background = pygame.Surface(screen.get_size())
-        background = background.convert()
-        background.fill((0, 0, 0 ))
-
-        screen.blit(background, (0, 0))
+        
 
         # adiciona jogadores a lista
         self.add_players(num_players)
@@ -209,31 +155,27 @@ class GameLoop:
         self.cards.append(Card(ARGELIA, CIRCULO))
         self.cards.append(Card(ARGENTINA, QUADRADO))
         self.cards.append(Card(AUSTRALIA, TRIANGULO))
-        #self.cards.append(Card(BORNEU, QUADRADO))
+        self.cards.append(Card(BORNEU, QUADRADO))
         self.cards.append(Card(BRASIL, CIRCULO))
         self.cards.append(Card(CALIFORNIA, QUADRADO))
         self.cards.append(Card(CHINA, CIRCULO))
         self.cards.append(Card(CONGO, QUADRADO))
         self.cards.append(Card(DUDINKA, CIRCULO))
         self.cards.append(Card(EGITO, TRIANGULO))
-        #escandinavia
         self.cards.append(Card(FRANCA, QUADRADO))
         self.cards.append(Card(GROELANDIA, CIRCULO))
         self.cards.append(Card(INDIA, QUADRADO))
         self.cards.append(Card(INGLATERRA, CIRCULO))
-        #italia
         self.cards.append(Card(ISLANDIA, TRIANGULO))
         self.cards.append(Card(JAPAO, QUADRADO))
         self.cards.append(Card(LABRADOR, QUADRADO))
         self.cards.append(Card(MACKENZIE, CIRCULO))
         self.cards.append(Card(MADAGASCAR, CIRCULO))
-        #marrocos
         self.cards.append(Card(MEXICO, QUADRADO))
         self.cards.append(Card(MONGOLIA, CIRCULO))
         self.cards.append(Card(MOSCOU, TRIANGULO))
         self.cards.append(Card(NOVA_GUINE, CIRCULO))
         self.cards.append(Card(NOVA_YORQUE, TRIANGULO))
-        #nova zelandia
         self.cards.append(Card(OMSK, QUADRADO))
         self.cards.append(Card(ORIENTE_MEDIO, QUADRADO))
         self.cards.append(Card(OTTAWA, CIRCULO))
@@ -285,29 +227,13 @@ class GameLoop:
 
 
     def start(self):
-        map= None
-        novo_jogo= Iniciar_jogo()
-        botoes=None
+        
 
         while self.winner is None:
             for event in pygame.event.get():
-                if(novo_jogo != None):
-                    if(pygame.Rect.collidepoint(novo_jogo.rect, pygame.mouse.get_pos())):
-                        novo_jogo.update(True)
-                        if(pygame.mouse.get_pressed(num_buttons=3)[0]== True):
-                            map = instancia_mapa()
-                            novo_jogo = None
-                    else:
-                        novo_jogo.update(False)
-                else:
-                    pass
-                if event.type == QUIT:
-                    return
-                
                 if(len(self.territories)!=0):
                     for valores in self.territories:
                         if(pygame.Rect.collidepoint(valores.botao.rect,pygame.mouse.get_pos())):
-                            print(valores.name)
                             if(pygame.mouse.get_pressed(num_buttons=3)[0]==True):
                                 valores.update()
 

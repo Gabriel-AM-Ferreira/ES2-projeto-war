@@ -28,7 +28,6 @@ class botao(pygame.sprite.Sprite):
     def __init__(self,cordenadas):
         pygame.sprite.Sprite.__init__(self)
         self.a=cordenadas
-        print(self.a[0])
         self.image, self.rect = fisica.load_png('neutro.png')
         self.screen = pygame.display.get_surface()
         self.rect.centerx = self.a[0]
