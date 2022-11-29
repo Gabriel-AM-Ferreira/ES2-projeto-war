@@ -1,5 +1,6 @@
 from continent import *
 from player import *
+from ia import *
 from card import *
 from territory import *
 from objective import *
@@ -11,12 +12,14 @@ from attackPhase import *
 from movementPhase import *
 from getObject import get_object_by_name
 from inputPlayer import ask_player_name, ask_color
+from iaRandomizer import pick_random_color, define_ia_name
 import re
 
 class GameLoop:
-    def __init__(self, num_players):
+    def __init__(self, num_players,num_ias):
         self.colors = [VERMELHO, AZUL, VERDE, AMARELO, PRETO, BRANCO]
         self.players = []
+        #self.ia = []
         self.cards = []
         self.used_cards = []
         self.objective_cards = []
@@ -29,13 +32,17 @@ class GameLoop:
         self.exchange_number = 0
 
         # adiciona jogadores a lista
-        self.add_players(num_players)
-
+        self.add_players(num_players,num_ias)
+        #self.add_ia_players(num_ias,num_players)
         # mostra os jogadores e suas cores
         for player in self.players:
             print(f"Jogador {player.name} criado.")
             print(player.name, "escolheu a cor", player.color)            
-        
+        '''for ia in self.ia:
+            print("olhando as ias")
+            print(f"Jogador IA {ia.name} criado.")
+            print(ia.name, "escolheu a cor", ia.color)'''
+                    
         # adiciona cartas de objetivo a lista
         self.objective_cards.append(Objective(OBJETIVO_1))
         self.objective_cards.append(Objective(OBJETIVO_2))
@@ -221,7 +228,7 @@ class GameLoop:
         while True:
             print("1 - Atacar")
             print("2 - Passar")
-            option = input("Opcao: ")
+            option = self.current_player.attack_or_pass() 
             if option == "1":
                 attack(self.current_player)
             elif option == "2":
@@ -235,7 +242,7 @@ class GameLoop:
         while True:
             print("1 - Mover")
             print("2 - Passar")
-            option = input("Opcao: ")
+            option = self.current_player.move_or_pass() 
             if option == "1":
                 print("Movimentacao")
                 move_troops(self.current_player)
@@ -276,13 +283,29 @@ class GameLoop:
             self.territories[i].owner = self.players[i % len(self.players)]
             self.territories[i].owner.territories.append(self.territories[i])
 
-    def add_players(self, num_players):
+    def add_players(self, num_players,num_ias):
         for i in range(num_players):
             player = Player(ask_player_name())
             self.players.append(player)
             color = ask_color(self.colors)
             player.color = color
             self.colors.remove(color)
+        for i in range(num_ias):
+            ia = IA(define_ia_name(i+num_players+1))
+            self.players.append(ia)
+            color = pick_random_color(self.colors)
+            ia.color = color
+            self.colors.remove(color)  
+
+
+    def add_ia_players(self,num_ias,num_players):
+        for i in range(num_ias):
+          ia = IA(define_ia_name(i+num_players+1))
+          self.ia.append(ia)
+          color = pick_random_color(self.colors)
+          ia.color = color
+          self.colors.remove(color)  
+
 
     def distribute_objectives(self):
         shuffle(self.objective_cards)

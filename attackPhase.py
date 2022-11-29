@@ -36,7 +36,8 @@ def combat(attacking_territory, target_territory, attacking_troops, target_troop
 
     # verifica se o territorio foi conquistado
     if target_territory.troops == 0:
-        troops_to_move = ask_quantity(attacking_troops - failed_attacks, "Quantas tropas deseja mover?")
+        
+        troops_to_move = attacking_territory.owner.move_pieces(attacking_troops - failed_attacks) 
         conquer_territory(attacking_territory, target_territory, troops_to_move)
     else:
         print("O ataque falhou!")

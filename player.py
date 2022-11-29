@@ -89,6 +89,17 @@ class Player:
         print(f"O territorio {from_territory.name} possui {from_territory.troops} tropas.")
         return ask_quantity(from_territory.troops-1, "Com quantas tropas deseja mover?")
 
+    def move_pieces(self,total_atack):
+        return ask_quantity(total_atack, "Quantas tropas deseja mover?")
+
+    def attack_or_pass(self):
+        return input("Opcao: ")
+
+    def move_or_pass(self):
+        return input("Opcao: ")
+
+
+
     def add_territory(self, territory):
         self.territories.append(territory)
         territory.owner = self
