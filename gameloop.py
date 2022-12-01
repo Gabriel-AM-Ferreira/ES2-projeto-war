@@ -96,48 +96,101 @@ class GameLoop:
 
         
         # cria grafo dos territórios
-        self.territories.append(Territory(ALASCA, AMERICA_DO_NORTE, [MACKENZIE, VANCOUVER, VLADIVOSTOK], TROPAS_MINIMAS, (58, 220)))
-        self.territories.append(Territory(MACKENZIE, AMERICA_DO_NORTE, [ALASCA, VANCOUVER, GROELANDIA, OTTAWA], TROPAS_MINIMAS,(221, 246)))
-        self.territories.append(Territory(VANCOUVER, AMERICA_DO_NORTE, [ALASCA, MACKENZIE, OTTAWA, CALIFORNIA], TROPAS_MINIMAS,(149, 281)))
-        self.territories.append(Territory(GROELANDIA, AMERICA_DO_NORTE, [MACKENZIE, LABRADOR, ISLANDIA], TROPAS_MINIMAS,(380, 219)))
-        self.territories.append(Territory(OTTAWA, AMERICA_DO_NORTE, [MACKENZIE, VANCOUVER, CALIFORNIA, NOVA_YORQUE, LABRADOR], TROPAS_MINIMAS,(238, 282)))
-        self.territories.append(Territory(LABRADOR, AMERICA_DO_NORTE, [OTTAWA, GROELANDIA, NOVA_YORQUE], TROPAS_MINIMAS,(291, 307)))
-        self.territories.append(Territory(NOVA_YORQUE, AMERICA_DO_NORTE, [OTTAWA, LABRADOR, CALIFORNIA, MEXICO], TROPAS_MINIMAS,(240, 331)))
-        self.territories.append(Territory(CALIFORNIA, AMERICA_DO_NORTE, [VANCOUVER, OTTAWA, NOVA_YORQUE, MEXICO], TROPAS_MINIMAS,(186, 351)))
-        self.territories.append(Territory(MEXICO, AMERICA_DO_NORTE, [NOVA_YORQUE, CALIFORNIA, VENEZUELA], TROPAS_MINIMAS,(213, 386)))
-        self.territories.append(Territory(VENEZUELA, AMERICA_DO_SUL, [MEXICO, PERU, BRASIL], TROPAS_MINIMAS,(300, 445)))
-        self.territories.append(Territory(PERU, AMERICA_DO_SUL, [VENEZUELA, BRASIL, ARGENTINA], TROPAS_MINIMAS,(289, 472)))
-        self.territories.append(Territory(BRASIL, AMERICA_DO_SUL, [VENEZUELA, PERU, ARGENTINA, ARGELIA], TROPAS_MINIMAS,(367, 511)))
-        self.territories.append(Territory(ARGENTINA, AMERICA_DO_SUL, [PERU, BRASIL], TROPAS_MINIMAS,(331, 545)))
-        self.territories.append(Territory(ARGELIA, AFRICA, [BRASIL,  FRANCA, EGITO, SUDAO, CONGO], TROPAS_MINIMAS,(540, 408)))
-        self.territories.append(Territory(EGITO, AFRICA, [ARGELIA, SUDAO, ORIENTE_MEDIO, POLONIA,  FRANCA], TROPAS_MINIMAS,(554, 373)))
-        self.territories.append(Territory(SUDAO, AFRICA, [ARGELIA, EGITO, ORIENTE_MEDIO, CONGO, MADAGASCAR], TROPAS_MINIMAS,(569, 407)))
-        self.territories.append(Territory(CONGO, AFRICA, [ARGELIA, SUDAO, AFRICA_DO_SUL], TROPAS_MINIMAS,(561, 460)))
-        self.territories.append(Territory(MADAGASCAR, AFRICA, [SUDAO, AFRICA_DO_SUL], TROPAS_MINIMAS,(641, 520)))
-        self.territories.append(Territory(AFRICA_DO_SUL, AFRICA, [CONGO, MADAGASCAR, SUDAO], TROPAS_MINIMAS,(559, 513)))
-        self.territories.append(Territory(FRANCA, EUROPA, [ARGELIA, EGITO, POLONIA, INGLATERRA, ALEMANHA], TROPAS_MINIMAS,(515, 314)))
-        self.territories.append(Territory(POLONIA, EUROPA, [EGITO, FRANCA, ALEMANHA, MOSCOU, ORIENTE_MEDIO], TROPAS_MINIMAS,(0,0)))
-        self.territories.append(Territory(INGLATERRA, EUROPA, [FRANCA, ALEMANHA, SUECIA, ISLANDIA], TROPAS_MINIMAS,(506, 278)))
-        self.territories.append(Territory(ALEMANHA, EUROPA, [FRANCA, POLONIA, INGLATERRA], TROPAS_MINIMAS,(542, 306)))
-        self.territories.append(Territory(SUECIA, EUROPA, [INGLATERRA, MOSCOU], TROPAS_MINIMAS,(0,0)))
-        self.territories.append(Territory(MOSCOU, EUROPA, [POLONIA, SUECIA, ORIENTE_MEDIO], TROPAS_MINIMAS,(640, 250)))
-        self.territories.append(Territory(ISLANDIA, EUROPA, [INGLATERRA, GROELANDIA], TROPAS_MINIMAS,(461, 236)))
-        self.territories.append(Territory(ORIENTE_MEDIO, ASIA, [EGITO, POLONIA, MOSCOU, INDIA, ARAL, SUDAO], TROPAS_MINIMAS,(646, 399)))
-        self.territories.append(Territory(INDIA, ASIA, [ORIENTE_MEDIO, ARAL, CHINA, VIETNA, SUMATRA], TROPAS_MINIMAS,(710, 363)))
-        self.territories.append(Territory(ARAL, ASIA, [ORIENTE_MEDIO, INDIA, CHINA, OMSK, MOSCOU], TROPAS_MINIMAS,(673, 335)))
-        self.territories.append(Territory(CHINA, ASIA, [ARAL, INDIA, VIETNA, OMSK, MONGOLIA, TCHITA, JAPAO, VLADIVOSTOK], TROPAS_MINIMAS,(833, 382)))
-        self.territories.append(Territory(VIETNA, ASIA, [INDIA, CHINA, BORNEU], TROPAS_MINIMAS,(786, 398)))
-        self.territories.append(Territory(JAPAO, ASIA, [CHINA, VLADIVOSTOK], TROPAS_MINIMAS,(891, 361)))
-        self.territories.append(Territory(VLADIVOSTOK, ASIA, [CHINA, JAPAO, SIBERIA, TCHITA, ALASCA], TROPAS_MINIMAS,(914, 255)))
-        self.territories.append(Territory(SIBERIA, ASIA, [VLADIVOSTOK, TCHITA, DUDINKA], TROPAS_MINIMAS,(852, 249)))
-        self.territories.append(Territory(TCHITA, ASIA, [SIBERIA, VLADIVOSTOK, CHINA, MONGOLIA, DUDINKA], TROPAS_MINIMAS,(806, 282)))
-        self.territories.append(Territory(MONGOLIA, ASIA, [TCHITA, CHINA, OMSK, DUDINKA], TROPAS_MINIMAS,(777, 312)))
-        self.territories.append(Territory(OMSK, ASIA, [MONGOLIA, CHINA, ARAL, MOSCOU, DUDINKA], TROPAS_MINIMAS,(687, 278)))
-        self.territories.append(Territory(DUDINKA, ASIA, [OMSK, MONGOLIA, TCHITA, SIBERIA], TROPAS_MINIMAS,(780, 254)))
-        self.territories.append(Territory(SUMATRA, OCEANIA, [INDIA, AUSTRALIA], TROPAS_MINIMAS,(799, 458)))
-        self.territories.append(Territory(BORNEU, OCEANIA, [VIETNA, AUSTRALIA, NOVA_GUINE], TROPAS_MINIMAS,(0,0)))
-        self.territories.append(Territory(AUSTRALIA, OCEANIA, [SUMATRA, BORNEU, NOVA_GUINE], TROPAS_MINIMAS,(870, 514)))
-        self.territories.append(Territory(NOVA_GUINE, OCEANIA, [AUSTRALIA, BORNEU], TROPAS_MINIMAS,(902, 468)))
+        self.territories.append(
+            Territory(ALASCA, AMERICA_DO_NORTE, [MACKENZIE, VANCOUVER, VLADIVOSTOK], TROPAS_MINIMAS, ((52, 120)),
+                      screen))
+        self.territories.append(
+            Territory(MACKENZIE, AMERICA_DO_NORTE, [ALASCA, VANCOUVER, GROELANDIA, OTTAWA], TROPAS_MINIMAS, (170, 128),
+                      screen))
+        self.territories.append(
+            Territory(VANCOUVER, AMERICA_DO_NORTE, [ALASCA, MACKENZIE, OTTAWA, CALIFORNIA], TROPAS_MINIMAS, (132, 186),
+                      screen))
+        self.territories.append(
+            Territory(GROELANDIA, AMERICA_DO_NORTE, [MACKENZIE, LABRADOR, ISLANDIA], TROPAS_MINIMAS, (383, 71), screen))
+        self.territories.append(
+            Territory(OTTAWA, AMERICA_DO_NORTE, [MACKENZIE, VANCOUVER, CALIFORNIA, NOVA_YORQUE, LABRADOR],
+                      TROPAS_MINIMAS, (225, 201), screen))
+        self.territories.append(
+            Territory(LABRADOR, AMERICA_DO_NORTE, [OTTAWA, GROELANDIA, NOVA_YORQUE], TROPAS_MINIMAS, (293, 194),
+                      screen))
+        self.territories.append(
+            Territory(NOVA_YORQUE, AMERICA_DO_NORTE, [OTTAWA, LABRADOR, CALIFORNIA, MEXICO], TROPAS_MINIMAS, (239, 269),
+                      screen))
+        self.territories.append(
+            Territory(CALIFORNIA, AMERICA_DO_NORTE, [VANCOUVER, OTTAWA, NOVA_YORQUE, MEXICO], TROPAS_MINIMAS,
+                      (170, 250), screen))
+        self.territories.append(
+            Territory(MEXICO, AMERICA_DO_NORTE, [NOVA_YORQUE, CALIFORNIA, VENEZUELA], TROPAS_MINIMAS, (197, 323),
+                      screen))
+        self.territories.append(
+            Territory(VENEZUELA, AMERICA_DO_SUL, [MEXICO, PERU, BRASIL], TROPAS_MINIMAS, (294, 373), screen))
+        self.territories.append(
+            Territory(PERU, AMERICA_DO_SUL, [VENEZUELA, BRASIL, ARGENTINA], TROPAS_MINIMAS, (300, 439), screen))
+        self.territories.append(
+            Territory(BRASIL, AMERICA_DO_SUL, [VENEZUELA, PERU, ARGENTINA, ARGELIA], TROPAS_MINIMAS, (353, 423),
+                      screen))
+        self.territories.append(
+            Territory(ARGENTINA, AMERICA_DO_SUL, [PERU, BRASIL], TROPAS_MINIMAS, (302, 497), screen))
+        self.territories.append(
+            Territory(ARGELIA, AFRICA, [BRASIL, FRANCA, EGITO, SUDAO, CONGO], TROPAS_MINIMAS, (437, 331), screen))
+        self.territories.append(
+            Territory(EGITO, AFRICA, [ARGELIA, SUDAO, ORIENTE_MEDIO, POLONIA, FRANCA], TROPAS_MINIMAS, (508, 307),
+                      screen))
+        self.territories.append(
+            Territory(SUDAO, AFRICA, [ARGELIA, EGITO, ORIENTE_MEDIO, CONGO, MADAGASCAR], TROPAS_MINIMAS, (550, 350),
+                      screen))
+        self.territories.append(
+            Territory(CONGO, AFRICA, [ARGELIA, SUDAO, AFRICA_DO_SUL], TROPAS_MINIMAS, (508, 373), screen))
+        self.territories.append(
+            Territory(MADAGASCAR, AFRICA, [SUDAO, AFRICA_DO_SUL], TROPAS_MINIMAS, (581, 447), screen))
+        self.territories.append(
+            Territory(AFRICA_DO_SUL, AFRICA, [CONGO, MADAGASCAR, SUDAO], TROPAS_MINIMAS, (515, 455), screen))
+        self.territories.append(
+            Territory(FRANCA, EUROPA, [ARGELIA, EGITO, POLONIA, INGLATERRA, ALEMANHA], TROPAS_MINIMAS, (445, 241),
+                      screen))
+        self.territories.append(
+            Territory(POLONIA, EUROPA, [EGITO, FRANCA, ALEMANHA, MOSCOU, ORIENTE_MEDIO], TROPAS_MINIMAS, (509, 242),
+                      screen))
+        self.territories.append(
+            Territory(INGLATERRA, EUROPA, [FRANCA, ALEMANHA, SUECIA, ISLANDIA], TROPAS_MINIMAS, (437, 193), screen))
+        self.territories.append(
+            Territory(ALEMANHA, EUROPA, [FRANCA, POLONIA, INGLATERRA], TROPAS_MINIMAS, (490, 208), screen))
+        self.territories.append(Territory(SUECIA, EUROPA, [INGLATERRA, MOSCOU], TROPAS_MINIMAS, (499, 118), screen))
+        self.territories.append(
+            Territory(MOSCOU, EUROPA, [POLONIA, SUECIA, ORIENTE_MEDIO], TROPAS_MINIMAS, (590, 164), screen))
+        self.territories.append(
+            Territory(ISLANDIA, EUROPA, [INGLATERRA, GROELANDIA], TROPAS_MINIMAS, (411, 151), screen))
+        self.territories.append(
+            Territory(ORIENTE_MEDIO, ASIA, [EGITO, POLONIA, MOSCOU, INDIA, ARAL, SUDAO], TROPAS_MINIMAS, (576, 288),
+                      screen))
+        self.territories.append(
+            Territory(INDIA, ASIA, [ORIENTE_MEDIO, ARAL, CHINA, VIETNA, SUMATRA], TROPAS_MINIMAS, (671, 305), screen))
+        self.territories.append(
+            Territory(ARAL, ASIA, [ORIENTE_MEDIO, INDIA, CHINA, OMSK, MOSCOU], TROPAS_MINIMAS, (636, 227), screen))
+        self.territories.append(
+            Territory(CHINA, ASIA, [ARAL, INDIA, VIETNA, OMSK, MONGOLIA, TCHITA, JAPAO, VLADIVOSTOK], TROPAS_MINIMAS,
+                      (749, 273), screen))
+        self.territories.append(Territory(VIETNA, ASIA, [INDIA, CHINA, BORNEU], TROPAS_MINIMAS, (749, 330), screen))
+        self.territories.append(Territory(JAPAO, ASIA, [CHINA, VLADIVOSTOK], TROPAS_MINIMAS, (871, 258), screen))
+        self.territories.append(
+            Territory(VLADIVOSTOK, ASIA, [CHINA, JAPAO, SIBERIA, TCHITA, ALASCA], TROPAS_MINIMAS, (938, 125), screen))
+        self.territories.append(
+            Territory(SIBERIA, ASIA, [VLADIVOSTOK, TCHITA, DUDINKA], TROPAS_MINIMAS, (847, 104), screen))
+        self.territories.append(
+            Territory(TCHITA, ASIA, [SIBERIA, VLADIVOSTOK, CHINA, MONGOLIA, DUDINKA], TROPAS_MINIMAS, (769, 190),
+                      screen))
+        self.territories.append(
+            Territory(MONGOLIA, ASIA, [TCHITA, CHINA, OMSK, DUDINKA], TROPAS_MINIMAS, (746, 223), screen))
+        self.territories.append(
+            Territory(OMSK, ASIA, [MONGOLIA, CHINA, ARAL, MOSCOU, DUDINKA], TROPAS_MINIMAS, (675, 146), screen))
+        self.territories.append(
+            Territory(DUDINKA, ASIA, [OMSK, MONGOLIA, TCHITA, SIBERIA], TROPAS_MINIMAS, (731, 92), screen))
+        self.territories.append(Territory(SUMATRA, OCEANIA, [INDIA, AUSTRALIA], TROPAS_MINIMAS, (750, 391), screen))
+        self.territories.append(
+            Territory(BORNEU, OCEANIA, [VIETNA, AUSTRALIA, NOVA_GUINE], TROPAS_MINIMAS, (785, 382), screen))
+        self.territories.append(
+            Territory(AUSTRALIA, OCEANIA, [SUMATRA, BORNEU, NOVA_GUINE], TROPAS_MINIMAS, (844, 455), screen))
+        self.territories.append(Territory(NOVA_GUINE, OCEANIA, [AUSTRALIA, BORNEU], TROPAS_MINIMAS, (863, 400), screen))
 
         # adiciona continentes a lista
         self.continents.append(Continent(AFRICA, BONUS_ASIA, self.territories))
@@ -180,10 +233,10 @@ class GameLoop:
         self.cards.append(Card(ORIENTE_MEDIO, QUADRADO))
         self.cards.append(Card(OTTAWA, CIRCULO))
         self.cards.append(Card(PERU, QUADRADO))
-        #self.cards.append(Card(POLONIA, QUADRADO))
+        self.cards.append(Card(POLONIA, QUADRADO))
         self.cards.append(Card(SIBERIA, TRIANGULO))
         self.cards.append(Card(SUDAO, QUADRADO))
-        #self.cards.append(Card(SUECIA, CIRCULO))
+        self.cards.append(Card(SUECIA, CIRCULO))
         self.cards.append(Card(SUMATRA, QUADRADO))
         self.cards.append(Card(TCHITA, TRIANGULO))
         self.cards.append(Card(VANCOUVER, TRIANGULO))
@@ -213,6 +266,8 @@ class GameLoop:
 
         # cria grafo dos territorios
         self.create_map()
+        pygame.display.flip()
+
 
         
 

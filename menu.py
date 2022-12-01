@@ -37,7 +37,7 @@ class Iniciar_jogo(pygame.sprite.Sprite,fisica):
 class instancia_mapa(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = fisica.load_png('mapaWar.png')
+        self.image, self.rect = fisica.load_png('mapaconcertado.png')
         self.screen = pygame.display.get_surface()
         self.rect.center = self.screen.get_rect().center
         self.valor=1

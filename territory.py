@@ -24,6 +24,20 @@ class fisica():
 
         return botoes
 
+class pg():
+    def __init__(self, a, b, c):
+        font = pygame.font.Font(None, 24)
+        text = font.render(f"{b} ", True, (0, 255, 255))
+        textpos = text.get_rect(x=c[0], y=c[1])
+        self.rect = pygame.Rect(c[0], c[1], 30, 30)
+        a.blit(text, textpos)
+
+
+
+
+
+
+
 class botao(pygame.sprite.Sprite):
     def __init__(self,cordenadas):
         pygame.sprite.Sprite.__init__(self)
@@ -68,12 +82,12 @@ class botao(pygame.sprite.Sprite):
             self.screen.blit(self.image,(self.a))
 
 class Territory:
-    def __init__(self, name, continent, neighbors_list, troops,cordenada):
+    def __init__(self, name, continent, neighbors_list, troops,cordenada, screen):
         self.name = name
         self.continent = continent
         self.neighbors = neighbors_list
         self.troops = troops
-        self.botao = botao(cordenada)
+        self.botao = pg(screen, str(troops), cordenada)
         self.owner = None
 
     def add_troops(self, number):
