@@ -31,7 +31,7 @@ class Player:
         while troops_to_add > 0:
             print(f"Você tem {troops_to_add} tropas para distribuir.")
             terr = ask_territory(territory_list, "Qual territorio deseja adicionar tropas?")
-            quantity = ask_quantity(troops_to_add, "Quantas tropas deseja adicionar?")    
+            quantity = ask_quantity(troops_to_add, "Quantas tropas deseja adicionar?")        
             terr.add_troops(quantity)
             troops_to_add -= quantity
 
