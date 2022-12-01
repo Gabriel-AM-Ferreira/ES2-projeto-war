@@ -95,10 +95,10 @@ class Menu:
                             map = instancia_mapa()
                             pygame.display.flip()
                             novo_jogo = None
-                            quad1=Menu.button (screen,(1096,0), "1 Jogador")
-                            quad2=Menu.button (screen,(1296,0), "2 Jogadores")
+                            quad_prompt=Menu.button(screen, (1096,0),"Número de jogadores ")
+                            quad1=Menu.button (screen,(1096,quad_prompt.height), "1 Jogador ")
+                            quad2=Menu.button (screen,(1096 + quad1.width, quad_prompt.height), "2 Jogadores")
                             pygame.display.flip()
-
 
                     else:
                         novo_jogo.update(False)

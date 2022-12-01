@@ -331,7 +331,7 @@ class GameLoop:
 
     def add_players(self, num_players):
         for i in range(num_players):
-            player = Player(ask_player_name())
+            player = Player(i)
             self.players.append(player)
             color = ask_color(self.colors)
             player.color = color
