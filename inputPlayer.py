@@ -1,4 +1,6 @@
 from getObject import get_object_by_name
+from menu import *
+from Button import *
 
 def ask_player_name():
     while True:
@@ -8,12 +10,44 @@ def ask_player_name():
         print("Nome invalido")
     return name
 
-def ask_color(colors):
+def ask_color(colors, screen):
+
+    prompt= Button(screen, (1096,0),"    Clique na sua cor !    ")
+    vermelho = Button(screen, (1096,prompt.h),"aaaaaaaaaa")
+    Button.colore(vermelho, (255,0,0))
+    azul = Button(screen, (1096+vermelho.w, prompt.h), "aaaaaaaaaa")
+    Button.colore(azul, "blue")
+    verde = Button(screen, (1096, prompt.h+vermelho.h), "aaaaaaaaaa")
+    Button.colore(verde, "green")
+    amarelo = Button(screen, (1096+vermelho.w, prompt.h+vermelho.h), "aaaaaaaaaa")
+    Button.colore(amarelo, "yellow")
+    preto = Button(screen, (1096, prompt.h+2*amarelo.h), "aaaaaaaaaa")
+    Button.colore(preto, (50,50,50))
+    branco = Button(screen, (1096+vermelho.w, prompt.h+2*amarelo.h), "aaaaaaaaaa")
+    Button.colore(branco, "white")
+
+    pygame.display.flip()
+
     while True:
-        color = input(f"Qual cor deseja?\n{colors}\n")
-        if color in colors:
-            return color
-        print("Cor invalida")
+        for event in pygame.event.get():
+            if Button.clicado(vermelho, event):
+                color = "VERMELHO"
+                return color
+            if Button.clicado(azul, event):
+                color = "AZUL"
+                return color
+            if Button.clicado(verde, event):
+                color = "VERDE"
+                return color
+            if Button.clicado(amarelo, event):
+                color = "AMARELO"
+                return color
+            if Button.clicado(preto, event):
+                color = "PRETO"
+                return color
+            if Button.clicado(branco, event):
+                color = "BRANCO"
+                return color
 
 def ask_territory(territories, question):
     while True:

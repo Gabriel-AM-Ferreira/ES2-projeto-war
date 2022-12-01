@@ -53,7 +53,7 @@ class fisica():
 
 
 class GameLoop:
-    def __init__(self, num_players):
+    def __init__(self, num_players, screen):
         self.colors = [VERMELHO, AZUL, VERDE, AMARELO, PRETO, BRANCO]
         self.players = []
         self.cards = []
@@ -70,7 +70,7 @@ class GameLoop:
         
 
         # adiciona jogadores a lista
-        self.add_players(num_players)
+        self.add_players(num_players, screen)
 
         # mostra os jogadores e suas cores
         for player in self.players:
@@ -329,11 +329,11 @@ class GameLoop:
             self.territories[i].owner = self.players[i % len(self.players)]
             self.territories[i].owner.territories.append(self.territories[i])
 
-    def add_players(self, num_players):
+    def add_players(self, num_players, screen):
         for i in range(num_players):
             player = Player(i)
             self.players.append(player)
-            color = ask_color(self.colors)
+            color = ask_color(self.colors, screen)
             player.color = color
             self.colors.remove(color)
 

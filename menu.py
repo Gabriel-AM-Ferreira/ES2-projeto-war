@@ -1,4 +1,5 @@
 from gameloop import *
+from Button import *
 
 
 
@@ -48,8 +49,10 @@ class instancia_mapa(pygame.sprite.Sprite):
 
 
 class Menu:
-
     def button(screen, position, text):
+        pygame.init()
+        pygame.font.init()
+
         font = pygame.font.SysFont("Comic Sans MS", 50)
         text_render = font.render(text, 1, (255, 0, 0))
         x, y, w, h = text_render.get_rect()
@@ -60,8 +63,6 @@ class Menu:
         pygame.draw.line(screen, (50, 50, 50), (x + w, y + h), [x + w, y], 5)
         pygame.draw.rect(screen, (100, 100, 100), (x, y, w, h))
         return screen.blit(text_render, (x, y))
-
-
 
     def __init__(self):
 
@@ -95,22 +96,19 @@ class Menu:
                             map = instancia_mapa()
                             pygame.display.flip()
                             novo_jogo = None
-                            quad_prompt=Menu.button(screen, (1096,0),"Número de jogadores ")
-                            quad1=Menu.button (screen,(1096,quad_prompt.height), "1 Jogador ")
-                            quad2=Menu.button (screen,(1096 + quad1.width, quad_prompt.height), "2 Jogadores")
+                            quad_prompt=Button(screen, (1096,0),"Número de jogadores ")
+                            quad1=Button (screen,(1096,quad_prompt.height), "1 Jogador ")
+                            quad2=Button (screen,(1096 + quad1.width, quad_prompt.height), "2 Jogadores")
                             pygame.display.flip()
-
                     else:
                         novo_jogo.update(False)
                 else:
-                    if (event.type == pygame.MOUSEBUTTONDOWN):
-                        if quad1.collidepoint(pygame.mouse.get_pos()):
-                            game = GameLoop(1)
-                            game.start()
-                    if (event.type == pygame.MOUSEBUTTONDOWN):
-                        if quad2.collidepoint(pygame.mouse.get_pos()):
-                            game = GameLoop(2)
-                            game.start()
+                    if Button.clicado(quad1, event):
+                        game = GameLoop(1,screen)
+                        game.start()
+                    if Button.clicado(quad2, event):
+                        game = GameLoop(2,screen)
+                        game.start()
 
                 if event.type == QUIT:
                     return
