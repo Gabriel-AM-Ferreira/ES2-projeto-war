@@ -73,6 +73,7 @@ class Player:
             if not ask_yes_or_no("Deseja continuar atacando?"):
                 return None
     
+    #metodos que funcionam 100 do input player, testes serao mais relevantes na classe em questao
     def get_defending_territory(self, attacking_territory):
         hostile_neighbors = attacking_territory.get_hostile_neighbors()
         return ask_territory(hostile_neighbors, "Qual o territorio alvo?")
