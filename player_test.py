@@ -9,7 +9,7 @@ import inputPlayer
 
 class PlayerTester(unittest.TestCase):
 
-    TRIANGULO = "Triângulo"
+    
 
     def setUp(self):
         self.playerDefault = Player("Tester")
